@@ -1,0 +1,29 @@
+{
+  "name": "network-visualizer",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "verify": "tsx scripts/verify-phase2.mjs && tsx scripts/verify-phase3.mjs && tsx scripts/verify-lab.mjs && tsx scripts/verify-phase4.mjs && tsx scripts/verify-phase5.mjs && tsx scripts/verify-extras.mjs && tsx scripts/verify-error-detection.mjs && tsx scripts/verify-reliable-transmission.mjs && tsx scripts/verify-mac-protocols.mjs && tsx scripts/verify-vlan.mjs && tsx scripts/verify-stp.mjs && tsx scripts/verify-routing-protocols.mjs && tsx scripts/verify-wireless.mjs && tsx scripts/verify-websocket.mjs && tsx scripts/verify-email.mjs && tsx scripts/verify-ssh.mjs && tsx scripts/verify-arp-timeout-lab.mjs && tsx scripts/verify-nat-scale-lab.mjs && tsx scripts/verify-routing-whatif-lab.mjs && tsx scripts/verify-aloha-throughput-lab.mjs && tsx scripts/verify-firewall-acl.mjs && tsx scripts/verify-diagnostic-lab.mjs && tsx scripts/verify-packet-life.mjs && tsx scripts/verify-load-balancing.mjs"
+  },
+  "dependencies": {
+    "groq-sdk": "^1.2.1",
+    "next": "16.2.9",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.9",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.0",
+    "typescript": "^5"
+  }
+}
