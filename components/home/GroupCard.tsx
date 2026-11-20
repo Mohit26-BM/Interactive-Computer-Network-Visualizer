@@ -17,7 +17,7 @@ export default function GroupCard({ href, preview, title, phase, blurb }: Props)
       href={href}
       className="group bg-neutral-900 border border-neutral-700 hover:border-indigo-500/40 hover:-translate-y-0.5 rounded-xl p-5 flex items-center gap-5 transition-all duration-200"
     >
-      <div className="w-24 h-24 shrink-0 rounded-lg bg-neutral-950/60 border border-neutral-800 flex items-center justify-center p-4 transition-shadow duration-300 group-hover:shadow-[0_0_16px_-4px_rgba(99,102,241,0.35)] group-hover:border-neutral-700">
+      <div className="w-24 h-24 shrink-0 rounded-lg bg-neutral-950/60 border border-neutral-800 flex items-center justify-center p-4 transition-shadow duration-300 group-hover:shadow-[0_0_16px_-4px_rgba(255,179,71,0.35)] group-hover:border-neutral-700">
         {preview}
       </div>
 

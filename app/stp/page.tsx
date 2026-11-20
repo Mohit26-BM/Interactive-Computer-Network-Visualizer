@@ -31,10 +31,10 @@ const POS: Record<string, { x: number; y: number }> = {
 };
 
 const ROLE_COLOR: Record<string, string> = {
-  root: "#818cf8",
-  designated: "#4ade80",
-  blocked: "#f87171",
-  none: "#525252",
+  root: "#ffc266",
+  designated: "#4fe0cc",
+  blocked: "#ff7d8e",
+  none: "#44546a",
 };
 
 const ROLE_LABEL: Record<string, string> = {
@@ -61,14 +61,14 @@ function Triangle({ step }: { step: StpStep | undefined }) {
         const portB = portFor(ports, l.id, l.b);
         const isFailed = failedLinkId === l.id;
         const isBlocked = portA?.role === "blocked" || portB?.role === "blocked";
-        const color = isFailed ? "#ef4444" : isBlocked ? "#f87171" : (portA?.role === "root" || portA?.role === "designated") ? "#4ade80" : "#525252";
+        const color = isFailed ? "#ff5d73" : isBlocked ? "#ff7d8e" : (portA?.role === "root" || portA?.role === "designated") ? "#4fe0cc" : "#44546a";
         const midX = (pa.x + pb.x) / 2, midY = (pa.y + pb.y) / 2;
         return (
           <g key={l.id}>
             <line x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y} stroke={color} strokeWidth={isFailed ? 2 : 2.5}
               strokeDasharray={isFailed || isBlocked ? "5 4" : undefined} className="transition-all duration-300" />
             {isFailed && (
-              <g transform={`translate(${midX}, ${midY})`} stroke="#ef4444" strokeWidth={2.5} strokeLinecap="round">
+              <g transform={`translate(${midX}, ${midY})`} stroke="#ff5d73" strokeWidth={2.5} strokeLinecap="round">
                 <line x1={-7} y1={-7} x2={7} y2={7} />
                 <line x1={-7} y1={7} x2={7} y2={-7} />
               </g>
@@ -87,10 +87,10 @@ function Triangle({ step }: { step: StpStep | undefined }) {
         return (
           <g key={label} transform={`translate(${pos.x}, ${pos.y})`}>
             <rect x={-26} y={-16} width={52} height={32} rx={4}
-              fill={isRoot ? "rgba(129,140,248,0.15)" : "#171717"}
-              stroke={isRoot ? "#818cf8" : "#525252"} strokeWidth={1.6} className="transition-all duration-300" />
-            <text x={0} y={-2} textAnchor="middle" fontSize={10} fontWeight="bold" fontFamily="monospace" fill={isRoot ? "#c7d2fe" : "#d4d4d4"}>{label}</text>
-            <text x={0} y={10} textAnchor="middle" fontSize={7} fontFamily="monospace" fill="#737373">priority {BRIDGE_ID[label]}{isRoot ? " · ROOT" : ""}</text>
+              fill={isRoot ? "rgba(129,140,248,0.15)" : "#0f151e"}
+              stroke={isRoot ? "#ffc266" : "#44546a"} strokeWidth={1.6} className="transition-all duration-300" />
+            <text x={0} y={-2} textAnchor="middle" fontSize={10} fontWeight="bold" fontFamily="monospace" fill={isRoot ? "#ffe3b8" : "#b4c0d1"}>{label}</text>
+            <text x={0} y={10} textAnchor="middle" fontSize={7} fontFamily="monospace" fill="#7d8aa0">priority {BRIDGE_ID[label]}{isRoot ? " · ROOT" : ""}</text>
           </g>
         );
       })}

@@ -27,7 +27,7 @@ const HOSTS = ["PC-1", "PC-2", "PC-3", "PC-4"];
 function Node({ label, active }: { label: string; active: boolean }) {
   return (
     <div className={`px-3 py-2 rounded-lg border text-xs font-mono text-center transition-all duration-300 ${
-      active ? "bg-indigo-500/20 border-indigo-400 text-indigo-200 shadow-[0_0_10px_rgba(99,102,241,0.4)]" : "bg-neutral-900 border-neutral-700 text-neutral-400"
+      active ? "bg-indigo-500/20 border-indigo-400 text-indigo-200 shadow-[0_0_10px_rgba(255,179,71,0.4)]" : "bg-neutral-900 border-neutral-700 text-neutral-400"
     }`}>
       {label}
     </div>
@@ -58,7 +58,7 @@ export default function VlanPage() {
 
       <div className="flex flex-col items-center gap-3">
         <Node label="R-1 (router-on-a-stick)" active={currentStep?.activeLabel === "R-1"} />
-        <div className={`w-px h-6 transition-all duration-300 ${currentStep?.viaTrunk ? "bg-indigo-400 shadow-[0_0_6px_rgba(99,102,241,0.6)]" : "bg-neutral-700"}`} />
+        <div className={`w-px h-6 transition-all duration-300 ${currentStep?.viaTrunk ? "bg-indigo-400 shadow-[0_0_6px_rgba(255,179,71,0.6)]" : "bg-neutral-700"}`} />
         <Node label="SW-1" active={currentStep?.activeLabel === "SW-1"} />
         <div className="grid grid-cols-2 gap-6 w-full max-w-md">
           <div className="border border-dashed border-blue-500/40 rounded-xl p-3 space-y-2">

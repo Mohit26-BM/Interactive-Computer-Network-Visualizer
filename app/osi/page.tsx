@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import RouteHelp from "@/components/shared/RouteHelp";
 import Logo from "@/components/shared/Logo";
+import SiteFooter from "@/components/shared/SiteFooter";
 
 interface BuildsHereLink {
   label: string;
@@ -119,7 +120,7 @@ export default function OSIPage() {
   const [expanded, setExpanded] = useState<number | null>(0);
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-white">
+    <div className="min-h-screen flex flex-col text-white">
       <header className="border-b border-neutral-800 px-6 py-4 flex items-center gap-4">
         <Link href="/" className="opacity-80 hover:opacity-100 transition-opacity" aria-label="Network Visualizer home" title="Back to home">
           <Logo showWordmark={false} size={22} />
@@ -228,6 +229,7 @@ export default function OSIPage() {
           })}
         </div>
       </div>
+      <SiteFooter />
     </div>
   );
 }

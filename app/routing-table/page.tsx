@@ -35,7 +35,7 @@ function Diagram({ at }: { at: string | null }) {
   return (
     <svg viewBox="0 0 640 150" className="w-full h-auto bg-neutral-900/60 border border-neutral-800 rounded-lg" role="img" aria-label="Network diagram: PC-1, R1, R2, R3, SRV-1">
       {LINKS.map(([a, b]) => (
-        <line key={a + b} x1={NODES[a].x} y1={NODES[a].y} x2={NODES[b].x} y2={NODES[b].y} stroke="#404040" strokeWidth={2} />
+        <line key={a + b} x1={NODES[a].x} y1={NODES[a].y} x2={NODES[b].x} y2={NODES[b].y} stroke="#2a3547" strokeWidth={2} />
       ))}
       {Object.entries(NODES).map(([name, p]) => {
         const active = at === name;
@@ -43,16 +43,16 @@ function Diagram({ at }: { at: string | null }) {
         return (
           <g key={name}>
             <rect x={p.x - 28} y={p.y - 16} width={56} height={32} rx={router ? 16 : 6}
-              fill={active ? "#4f46e5" : "#171717"} stroke={active ? "#a5b4fc" : "#525252"} strokeWidth={active ? 2.5 : 1.5} />
-            <text x={p.x} y={p.y + 4} textAnchor="middle" fontSize={12} fill="#fafafa" fontFamily="monospace">{name}</text>
+              fill={active ? "#a85a08" : "#0f151e"} stroke={active ? "#ffd698" : "#44546a"} strokeWidth={active ? 2.5 : 1.5} />
+            <text x={p.x} y={p.y + 4} textAnchor="middle" fontSize={12} fill="#f1f5fa" fontFamily="monospace">{name}</text>
           </g>
         );
       })}
-      <text x={120} y={92} fontSize={9} fill="#737373" textAnchor="middle" fontFamily="monospace">192.168.1.0/24</text>
-      <text x={515} y={92} fontSize={9} fill="#737373" textAnchor="middle" fontFamily="monospace">172.16.0.0/24</text>
-      <text x={255} y={62} fontSize={9} fill="#737373" textAnchor="middle" fontFamily="monospace">10.0.12.0/30</text>
-      <text x={385} y={62} fontSize={9} fill="#737373" textAnchor="middle" fontFamily="monospace">10.0.23.0/30</text>
-      <text x={320} y={118} fontSize={9} fill="#737373" textAnchor="middle" fontFamily="monospace">10.0.13.0/30</text>
+      <text x={120} y={92} fontSize={9} fill="#7d8aa0" textAnchor="middle" fontFamily="monospace">192.168.1.0/24</text>
+      <text x={515} y={92} fontSize={9} fill="#7d8aa0" textAnchor="middle" fontFamily="monospace">172.16.0.0/24</text>
+      <text x={255} y={62} fontSize={9} fill="#7d8aa0" textAnchor="middle" fontFamily="monospace">10.0.12.0/30</text>
+      <text x={385} y={62} fontSize={9} fill="#7d8aa0" textAnchor="middle" fontFamily="monospace">10.0.23.0/30</text>
+      <text x={320} y={118} fontSize={9} fill="#7d8aa0" textAnchor="middle" fontFamily="monospace">10.0.13.0/30</text>
     </svg>
   );
 }

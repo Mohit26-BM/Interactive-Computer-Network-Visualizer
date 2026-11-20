@@ -5,6 +5,7 @@ import Link from "next/link";
 import RouteHelp from "@/components/shared/RouteHelp";
 import Logo from "@/components/shared/Logo";
 import { NETWORK_DEVICES } from "@/lib/network-devices";
+import SiteFooter from "@/components/shared/SiteFooter";
 
 const HELP_SECTIONS = [
   { heading: "What this page does", body: "A reference, not a simulation — click any device to see which OSI layer it operates at, what unit it forwards, and how it affects collision/broadcast domains." },
@@ -15,7 +16,7 @@ export default function NetworkDevicesPage() {
   const [expanded, setExpanded] = useState<number | null>(2); // Switch, open by default
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-white">
+    <div className="min-h-screen flex flex-col text-white">
       <header className="border-b border-neutral-800 px-6 py-4 flex items-center gap-4">
         <Link href="/" className="opacity-80 hover:opacity-100 transition-opacity" aria-label="Network Visualizer home" title="Back to home">
           <Logo showWordmark={false} size={22} />
@@ -103,6 +104,7 @@ export default function NetworkDevicesPage() {
           })}
         </div>
       </div>
+      <SiteFooter />
     </div>
   );
 }

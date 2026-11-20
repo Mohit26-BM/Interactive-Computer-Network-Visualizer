@@ -131,7 +131,7 @@ export default function SimulatorShell({ title, phaseLabel, helpTitle, helpSecti
   const pathname = usePathname();
 
   return (
-    <div className="h-screen flex flex-col bg-neutral-950 text-white overflow-hidden">
+    <div className="h-screen flex flex-col text-white overflow-hidden">
       <header className="border-b border-neutral-800 px-4 py-3 flex items-center gap-3 shrink-0">
         <Link href="/" className="opacity-80 hover:opacity-100 transition-opacity shrink-0" aria-label="Network Visualizer home" title="Back to home">
           <Logo showWordmark={false} size={22} />

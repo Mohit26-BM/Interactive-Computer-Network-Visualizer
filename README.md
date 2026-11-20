@@ -197,6 +197,37 @@ similar carrier- or vendor-specific topics — the project draws its boundary
 at what a solid undergraduate networking course plus practical infrastructure
 literacy covers, not certification-exam or ISP-operator depth.
 
+## Theme: Switchboard
+
+The look is a telephone exchange: amber light pulses on graphite-blue panels, with Space Grotesk for headings, Geist for text and Geist Mono for addresses, ports and hex. The colours mean the same thing on every page:
+
+| Colour | Meaning |
+|---|---|
+| Amber `#ffb347` | the packet, the active step, the brand |
+| Periwinkle `#8b9cff` | structure: links, devices, lower layers |
+| Teal `#2dd4bf` | delivered, ACK, success |
+| Coral `#ff5d73` | dropped, error, bad checksum |
+| Lemon `#e6e25a` | warning (kept apart from the amber brand colour) |
+| Violet `#b48cff` | secure (TLS, SSH) or a further series |
+
+Everything is defined in `app/globals.css` with Tailwind v4 `@theme`. Tailwind's own colour scales are re-pointed to this palette (indigo is now amber, violet is periwinkle, neutral is graphite-blue ink, emerald and green are teal, red and rose are coral, amber and yellow are lemon), so a class such as `text-indigo-400` or `bg-neutral-900` anywhere in the app already uses the Switchboard colours. `bg-indigo-600` is a burnt amber so white button text stays readable. Hard-coded hex colours in the SVG diagrams were mapped to the same palette.
+
+### Home page hero
+
+A carousel of five photographs of real network hardware (switches with ethernet cables plugged in, a patch panel, a rack, a field engineer) in an amber duotone sits behind the headline. It cross-fades every 6.5 seconds, pauses while the tab is hidden, and the dots at the bottom right let you pick a photo. With reduced motion switched on it shows one still photo and no dots. The first photo loads immediately and the other four a moment later, so they never delay the page. The photos live in `public/images`, so the site never calls Pexels when it runs. There is nothing else animated in the hero.
+
+### Footer
+
+The browsing pages (home, learn, learning path, OSI, IPv6, network devices) share one footer (`components/shared/SiteFooter.tsx`) with the photo credits. The simulator pages use a fixed full-height shell and deliberately have no footer, so the canvas keeps every pixel.
+
+### Motion
+
+Buttons, links and cards ease between states, pressed buttons dip slightly, and every page fades in (`app/template.tsx`). All of it respects the operating-system "reduce motion" setting.
+
+## Image credits
+
+The Home page carousel uses photographs from [Pexels](https://www.pexels.com) (free licence): Brett Sayles, Vladimir Srajber, cottonbro studio and Field Engineer. Each photographer is credited and linked in the footer. They are stored as WebP files in `public/images`, and no Pexels key is needed to run or deploy the site.
+
 ## Local development
 
 ```bash

@@ -39,7 +39,7 @@ function badgeClass(label: string): string {
 export default function TypeCard({ href, preview, title, subtitle, badges, description, disabled, phaseTag }: Props) {
   const content = (
     <>
-      <div className={`w-full h-20 rounded-lg bg-neutral-950/60 border border-neutral-800 flex items-center justify-center p-3 transition-shadow duration-300 ${!disabled ? "group-hover:shadow-[0_0_16px_-4px_rgba(99,102,241,0.35)] group-hover:border-neutral-700" : ""}`}>
+      <div className={`w-full h-20 rounded-lg bg-neutral-950/60 border border-neutral-800 flex items-center justify-center p-3 transition-shadow duration-300 ${!disabled ? "group-hover:shadow-[0_0_16px_-4px_rgba(255,179,71,0.35)] group-hover:border-neutral-700" : ""}`}>
         {preview}
       </div>
 

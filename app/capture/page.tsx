@@ -45,19 +45,19 @@ function Ladder({ packets, current }: { packets: CapturedPacket[]; current: numb
     <svg viewBox={`0 0 ${WIDTH} ${height}`} className="w-full h-auto bg-neutral-900/60 border border-neutral-800 rounded-lg" role="img" aria-label="Packet ladder diagram">
       {hosts.map((h) => (
         <g key={h}>
-          <line x1={colX(h)} x2={colX(h)} y1={30} y2={height - 4} stroke="#404040" strokeDasharray="3 3" />
-          <text x={colX(h)} y={16} fontSize={10} textAnchor="middle" fill="#d4d4d4" fontFamily="monospace">{trim(h, 22)}</text>
+          <line x1={colX(h)} x2={colX(h)} y1={30} y2={height - 4} stroke="#2a3547" strokeDasharray="3 3" />
+          <text x={colX(h)} y={16} fontSize={10} textAnchor="middle" fill="#b4c0d1" fontFamily="monospace">{trim(h, 22)}</text>
         </g>
       ))}
       {rows.map((p, i) => {
         const y = 44 + i * ROW;
         const active = start + i === current;
         const a = hosts.includes(p.src) ? colX(p.src) : null, b = hosts.includes(p.dst) ? colX(p.dst) : null;
-        const color = p.phase === "error" ? "#f87171" : active ? "#a5b4fc" : "#737373";
+        const color = p.phase === "error" ? "#ff7d8e" : active ? "#ffd698" : "#7d8aa0";
         return (
           <g key={p.no} opacity={active ? 1 : 0.75}>
-            {active && <rect x={0} y={y - 16} width={WIDTH} height={ROW - 2} fill="#4f46e5" opacity={0.18} />}
-            <text x={6} y={y - 3} fontSize={9} fill="#737373" fontFamily="monospace">#{p.no}</text>
+            {active && <rect x={0} y={y - 16} width={WIDTH} height={ROW - 2} fill="#a85a08" opacity={0.18} />}
+            <text x={6} y={y - 3} fontSize={9} fill="#7d8aa0" fontFamily="monospace">#{p.no}</text>
             {a !== null && b !== null && a !== b ? (
               <>
                 <line x1={a} x2={b} y1={y} y2={y} stroke={color} strokeWidth={active ? 2.5 : 1.5} />
@@ -66,10 +66,10 @@ function Ladder({ packets, current }: { packets: CapturedPacket[]; current: numb
             ) : (
               <line x1={(a ?? b ?? 70) - 10} x2={(a ?? b ?? 70) + 10} y1={y} y2={y} stroke={color} strokeWidth={1.5} />
             )}
-            <text x={((a ?? 70) + (b ?? 70)) / 2} y={y - 5} fontSize={9} textAnchor="middle" fill={active ? "#fafafa" : "#a3a3a3"} fontFamily="monospace">
+            <text x={((a ?? 70) + (b ?? 70)) / 2} y={y - 5} fontSize={9} textAnchor="middle" fill={active ? "#f1f5fa" : "#98a6bb"} fontFamily="monospace">
               {trim(`${p.proto}: ${p.info}`, 56)}
             </text>
-            <text x={WIDTH - 6} y={y - 3} fontSize={9} textAnchor="end" fill="#737373" fontFamily="monospace">{p.time.toFixed(3)}s</text>
+            <text x={WIDTH - 6} y={y - 3} fontSize={9} textAnchor="end" fill="#7d8aa0" fontFamily="monospace">{p.time.toFixed(3)}s</text>
           </g>
         );
       })}

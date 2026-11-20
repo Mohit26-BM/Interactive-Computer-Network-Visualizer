@@ -4,10 +4,10 @@
 // diagrams did. Consistent stroke width (1.5), consistent corner radius,
 // consistent palette: neutral for structure, indigo for the "active" bit.
 
-const LINE = "#52525b";      // neutral-600 — structural lines/boxes
-const LINE_SOFT = "#3f3f46"; // neutral-700 — dashed/secondary lines
-const ACCENT = "#818cf8";    // indigo-400 — the one thing to look at
-const SURFACE = "#18181b";   // neutral-900 — box fill
+const LINE = "#44546a";      // neutral-600 — structural lines/boxes
+const LINE_SOFT = "#2a3547"; // neutral-700 — dashed/secondary lines
+const ACCENT = "#ffc266";    // indigo-400 — the one thing to look at
+const SURFACE = "#0f151e";   // neutral-900 — box fill
 
 const wrap = "w-full h-full";
 
@@ -483,7 +483,7 @@ export function ErrorDetectionPreview() {
       ))}
       <rect x="66" y="20" width="11" height="16" rx="1.5" fill="rgba(129,140,248,0.15)" stroke={ACCENT} strokeWidth="1.4" />
       <text x="71.5" y="31" fontSize="7" textAnchor="middle" fill={ACCENT} fontFamily="monospace" fontWeight="bold">1</text>
-      <path d="M82 22 L92 12 M82 12 L92 22" stroke="#f87171" strokeWidth="1.4" strokeLinecap="round" />
+      <path d="M82 22 L92 12 M82 12 L92 22" stroke="#ff7d8e" strokeWidth="1.4" strokeLinecap="round" />
     </svg>
   );
 }
@@ -499,7 +499,7 @@ export function MacProtocolsPreview() {
       {stations.map((s, i) => (
         <circle key={i} cx={s.x} cy={s.y} r="6" fill={i < 2 ? "rgba(129,140,248,0.15)" : "none"} stroke={i < 2 ? ACCENT : LINE} strokeWidth="1.4" />
       ))}
-      <path d="M40,24 L56,32 M40,32 L56,24" stroke="#f87171" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M40,24 L56,32 M40,32 L56,24" stroke="#ff7d8e" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }
@@ -510,7 +510,7 @@ export function ReliableTransmissionPreview() {
     <svg viewBox="0 0 96 56" className={wrap} aria-hidden="true">
       {segs.map((i) => (
         <rect key={i} x={8 + i * 17} y="12" width="14" height="12" rx="1.5"
-          fill={i === 2 ? "none" : "rgba(129,140,248,0.15)"} stroke={i === 2 ? "#f87171" : ACCENT} strokeWidth="1.3"
+          fill={i === 2 ? "none" : "rgba(129,140,248,0.15)"} stroke={i === 2 ? "#ff7d8e" : ACCENT} strokeWidth="1.3"
           strokeDasharray={i === 2 ? "2 2" : undefined} />
       ))}
       <path d="M8 34 H92" stroke={LINE_SOFT} strokeWidth="1.2" strokeDasharray="3 2" markerEnd="url(#rt-arrow)" />
@@ -532,12 +532,12 @@ export function VlanPreview() {
     <svg viewBox="0 0 96 56" className={wrap} aria-hidden="true">
       <rect x="38" y="4" width="20" height="10" rx="2" fill="none" stroke={LINE} strokeWidth="1.4" />
       <line x1="48" y1="14" x2="48" y2="22" stroke={LINE} strokeWidth="1.4" />
-      <rect x="6" y="22" width="40" height="12" rx="2" fill="rgba(96,165,250,0.1)" stroke="#60a5fa" strokeWidth="1.3" />
-      <rect x="50" y="22" width="40" height="12" rx="2" fill="rgba(251,191,36,0.1)" stroke="#fbbf24" strokeWidth="1.3" />
-      <rect x="12" y="40" width="12" height="9" rx="1.5" fill="none" stroke="#60a5fa" strokeWidth="1.2" />
-      <rect x="28" y="40" width="12" height="9" rx="1.5" fill="none" stroke="#60a5fa" strokeWidth="1.2" />
-      <rect x="56" y="40" width="12" height="9" rx="1.5" fill="none" stroke="#fbbf24" strokeWidth="1.2" />
-      <rect x="72" y="40" width="12" height="9" rx="1.5" fill="none" stroke="#fbbf24" strokeWidth="1.2" />
+      <rect x="6" y="22" width="40" height="12" rx="2" fill="rgba(96,165,250,0.1)" stroke="#7eb3ff" strokeWidth="1.3" />
+      <rect x="50" y="22" width="40" height="12" rx="2" fill="rgba(251,191,36,0.1)" stroke="#e6e25a" strokeWidth="1.3" />
+      <rect x="12" y="40" width="12" height="9" rx="1.5" fill="none" stroke="#7eb3ff" strokeWidth="1.2" />
+      <rect x="28" y="40" width="12" height="9" rx="1.5" fill="none" stroke="#7eb3ff" strokeWidth="1.2" />
+      <rect x="56" y="40" width="12" height="9" rx="1.5" fill="none" stroke="#e6e25a" strokeWidth="1.2" />
+      <rect x="72" y="40" width="12" height="9" rx="1.5" fill="none" stroke="#e6e25a" strokeWidth="1.2" />
     </svg>
   );
 }
@@ -550,8 +550,8 @@ export function StpPreview() {
       <circle cx="80" cy="42" r="7" fill="none" stroke={LINE} strokeWidth="1.4" />
       <line x1="42" y1="20" x2="20" y2="36" stroke={ACCENT} strokeWidth="1.5" />
       <line x1="54" y1="20" x2="76" y2="36" stroke={ACCENT} strokeWidth="1.5" />
-      <line x1="16" y1="35" x2="80" y2="35" stroke="#f87171" strokeWidth="1.5" strokeDasharray="3 2" />
-      <path d="M42 33 L50 33 M42 37 L50 37" stroke="#f87171" strokeWidth="1.6" strokeLinecap="round" />
+      <line x1="16" y1="35" x2="80" y2="35" stroke="#ff7d8e" strokeWidth="1.5" strokeDasharray="3 2" />
+      <path d="M42 33 L50 33 M42 37 L50 37" stroke="#ff7d8e" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }
@@ -632,9 +632,9 @@ export function LoadBalancingPreview() {
       <rect x="41" y="22" width="14" height="12" rx="2" fill="rgba(129,140,248,0.15)" stroke={ACCENT} strokeWidth="1.4" />
       <line x1="18" y1="28" x2="41" y2="28" stroke={LINE_SOFT} strokeWidth="1.3" />
       <path d="M55 24 L78 12 M55 28 L78 28 M55 32 L78 44" stroke={ACCENT} strokeWidth="1.3" fill="none" />
-      <rect x="78" y="7" width="12" height="10" rx="1.5" fill="none" stroke="#4ade80" strokeWidth="1.2" />
-      <rect x="78" y="23" width="12" height="10" rx="1.5" fill="none" stroke="#4ade80" strokeWidth="1.2" />
-      <rect x="78" y="39" width="12" height="10" rx="1.5" fill="none" stroke="#f87171" strokeWidth="1.2" strokeDasharray="2 2" />
+      <rect x="78" y="7" width="12" height="10" rx="1.5" fill="none" stroke="#4fe0cc" strokeWidth="1.2" />
+      <rect x="78" y="23" width="12" height="10" rx="1.5" fill="none" stroke="#4fe0cc" strokeWidth="1.2" />
+      <rect x="78" y="39" width="12" height="10" rx="1.5" fill="none" stroke="#ff7d8e" strokeWidth="1.2" strokeDasharray="2 2" />
     </svg>
   );
 }
@@ -642,10 +642,10 @@ export function LoadBalancingPreview() {
 export function PacketLifePreview() {
   return (
     <svg viewBox="0 0 96 56" className={wrap} aria-hidden="true">
-      <rect x="4" y="24" width="10" height="10" rx="1.5" fill="none" stroke="#fbbf24" strokeWidth="1.3" />
-      <rect x="16" y="22" width="10" height="14" rx="1.5" fill="none" stroke="#a78bfa" strokeWidth="1.3" />
+      <rect x="4" y="24" width="10" height="10" rx="1.5" fill="none" stroke="#e6e25a" strokeWidth="1.3" />
+      <rect x="16" y="22" width="10" height="14" rx="1.5" fill="none" stroke="#8b9cff" strokeWidth="1.3" />
       <rect x="28" y="20" width="10" height="18" rx="1.5" fill="none" stroke={ACCENT} strokeWidth="1.3" />
-      <rect x="40" y="18" width="10" height="22" rx="1.5" fill="none" stroke="#fb7185" strokeWidth="1.3" />
+      <rect x="40" y="18" width="10" height="22" rx="1.5" fill="none" stroke="#ff7d8e" strokeWidth="1.3" />
       <line x1="56" y1="28" x2="90" y2="28" stroke={LINE_SOFT} strokeWidth="1.4" strokeDasharray="3 2" />
       <circle className="preview-packet" cx="56" cy="28" r="4" fill={ACCENT} style={{ ["--glide-distance" as string]: "34px" }} />
     </svg>
@@ -655,12 +655,12 @@ export function PacketLifePreview() {
 export function FirewallAclPreview() {
   return (
     <svg viewBox="0 0 96 56" className={wrap} aria-hidden="true">
-      <rect x="8" y="8" width="50" height="10" rx="2" fill="rgba(74,222,128,0.15)" stroke="#4ade80" strokeWidth="1.3" />
-      <rect x="8" y="21" width="50" height="10" rx="2" fill="rgba(248,113,113,0.15)" stroke="#f87171" strokeWidth="1.3" />
+      <rect x="8" y="8" width="50" height="10" rx="2" fill="rgba(74,222,128,0.15)" stroke="#4fe0cc" strokeWidth="1.3" />
+      <rect x="8" y="21" width="50" height="10" rx="2" fill="rgba(248,113,113,0.15)" stroke="#ff7d8e" strokeWidth="1.3" />
       <rect x="8" y="34" width="50" height="10" rx="2" fill="none" stroke={LINE_SOFT} strokeWidth="1.2" strokeDasharray="2 2" />
       <path d="M64 13 L88 13 M64 26 L88 26" stroke={LINE} strokeWidth="1.2" strokeDasharray="3 2" />
-      <path d="M66 39 L92 39" stroke="#f87171" strokeWidth="1.6" />
-      <path d="M78 34 L86 44 M86 34 L78 44" stroke="#f87171" strokeWidth="1.4" strokeLinecap="round" />
+      <path d="M66 39 L92 39" stroke="#ff7d8e" strokeWidth="1.6" />
+      <path d="M78 34 L86 44 M86 34 L78 44" stroke="#ff7d8e" strokeWidth="1.4" strokeLinecap="round" />
     </svg>
   );
 }
@@ -697,8 +697,8 @@ export function RoutingWhatIfLabPreview() {
     <svg viewBox="0 0 96 56" className={wrap} aria-hidden="true">
       <circle cx="14" cy="28" r="7" fill="none" stroke={LINE} strokeWidth="1.5" />
       <circle cx="82" cy="28" r="7" fill="rgba(129,140,248,0.15)" stroke={ACCENT} strokeWidth="1.5" />
-      <path d="M20 25 L76 25" stroke="#f87171" strokeWidth="1.6" strokeDasharray="4 3" />
-      <path d="M42 20 L52 20 M42 30 L52 30" stroke="#f87171" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M20 25 L76 25" stroke="#ff7d8e" strokeWidth="1.6" strokeDasharray="4 3" />
+      <path d="M42 20 L52 20 M42 30 L52 30" stroke="#ff7d8e" strokeWidth="1.6" strokeLinecap="round" />
       <path d="M20 32 L50 42 L76 32" stroke={ACCENT} strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -711,9 +711,9 @@ export function DiagnosticLabPreview() {
       {rows.map((i) => (
         <rect key={i} x="14" y={8 + i * 13} width="60" height="9" rx="2"
           fill={i < 2 ? "rgba(74,222,128,0.12)" : "rgba(248,113,113,0.15)"}
-          stroke={i < 2 ? "#4ade80" : "#f87171"} strokeWidth="1.2" />
+          stroke={i < 2 ? "#4fe0cc" : "#ff7d8e"} strokeWidth="1.2" />
       ))}
-      <path d="M40 34 L48 44 M48 34 L40 44" stroke="#f87171" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M40 34 L48 44 M48 34 L40 44" stroke="#ff7d8e" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }

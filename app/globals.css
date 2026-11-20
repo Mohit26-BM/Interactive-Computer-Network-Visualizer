@@ -1,8 +1,18 @@
 @import "tailwindcss";
 
+/*
+  Switchboard theme: amber light pulses on graphite-blue panels, like a telephone exchange.
+  The roles are the same on every page:
+    amber = the packet / the active step / the brand        periwinkle = structure: links, devices, lower layers
+    teal = delivered, ACK, success                          coral = dropped, error, bad checksum
+    lemon = warning                                         violet = secure (TLS, SSH) or a further series
+  Tailwind's own colour scales are re-pointed below (indigo becomes amber, violet becomes periwinkle, neutral becomes
+  graphite-blue ink, and so on), so every existing class such as text-indigo-400 or bg-neutral-900 picks up the
+  palette without touching each page.
+*/
 :root {
-  --background: #121212;
-  --foreground: #e8e8ea;
+  --background: #080b10;
+  --foreground: #e6ebf2;
 }
 
 @theme inline {
@@ -10,11 +20,138 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-space-grotesk);
+}
+
+@theme {
+  --color-white: #f1f5fa;
+  --color-black: #030508;
+
+  /* ink: graphite-blue neutrals */
+  --color-neutral-50: #f4f7fb;
+  --color-neutral-100: #e6ebf2;
+  --color-neutral-200: #d0d8e4;
+  --color-neutral-300: #b4c0d1;
+  --color-neutral-400: #98a6bb;
+  --color-neutral-500: #7d8aa0;
+  --color-neutral-600: #44546a;
+  --color-neutral-700: #2a3547;
+  --color-neutral-800: #1a2230;
+  --color-neutral-900: #0f151e;
+  --color-neutral-950: #080b10;
+  --color-gray-400: #98a6bb;
+  --color-gray-500: #7d8aa0;
+  --color-zinc-600: #44546a;
+  --color-zinc-700: #2a3547;
+  --color-zinc-800: #1a2230;
+  --color-slate-400: #98a6bb;
+  --color-slate-500: #7d8aa0;
+
+  /* brand / "the packet": amber light (replaces indigo). 600 is a burnt amber so white button text stays readable */
+  --color-indigo-50: #fff8ea;
+  --color-indigo-100: #ffefcc;
+  --color-indigo-200: #ffe0a3;
+  --color-indigo-300: #ffd07a;
+  --color-indigo-400: #ffb347;
+  --color-indigo-500: #c46d0c;
+  --color-indigo-600: #a85a08;
+  --color-indigo-700: #7d4106;
+  --color-indigo-800: #5a2f05;
+  --color-indigo-900: #3a1e03;
+  --color-indigo-950: #211102;
+
+  /* structure: periwinkle (replaces violet, sky, cyan) */
+  --color-violet-200: #dde2ff;
+  --color-violet-300: #c4cdff;
+  --color-violet-400: #8b9cff;
+  --color-violet-500: #6b7df0;
+  --color-violet-600: #5362d6;
+  --color-sky-300: #c0e4ff;
+  --color-sky-400: #8bd0ff;
+  --color-sky-500: #5bb4f5;
+  --color-cyan-300: #c0e4ff;
+  --color-cyan-400: #8bd0ff;
+  --color-cyan-500: #5bb4f5;
+  --color-blue-300: #bcd6ff;
+  --color-blue-400: #7eb3ff;
+  --color-blue-500: #5b94f0;
+  --color-blue-600: #4476d6;
+  --color-purple-300: #d8c4ff;
+  --color-purple-400: #b48cff;
+  --color-purple-500: #9a6df5;
+  --color-fuchsia-400: #c69cff;
+  --color-pink-400: #c69cff;
+
+  /* delivered / success: teal */
+  --color-emerald-200: #b5f5eb;
+  --color-emerald-300: #7eeed9;
+  --color-emerald-400: #4fe0cc;
+  --color-emerald-500: #2dd4bf;
+  --color-emerald-600: #1fa898;
+  --color-emerald-700: #167d71;
+  --color-green-200: #c8f5d8;
+  --color-green-300: #a8f0c0;
+  --color-green-400: #6fe39a;
+  --color-green-500: #3dcc78;
+  --color-green-600: #2ea35f;
+  --color-teal-400: #4fe0cc;
+  --color-teal-500: #2dd4bf;
+  --color-lime-400: #c5e86b;
+
+  /* dropped / error: coral */
+  --color-red-200: #ffd0d6;
+  --color-red-300: #ffa3b0;
+  --color-red-400: #ff7d8e;
+  --color-red-500: #ff5d73;
+  --color-red-600: #e0425a;
+  --color-red-900: #4a1520;
+  --color-rose-300: #ffa3b0;
+  --color-rose-400: #ff7d8e;
+  --color-rose-500: #ff5d73;
+
+  /* warning: lemon, kept apart from the amber brand colour */
+  --color-amber-200: #f5f0b0;
+  --color-amber-300: #ece67a;
+  --color-amber-400: #e6e25a;
+  --color-amber-500: #cfc83a;
+  --color-amber-600: #aaa326;
+  --color-yellow-300: #ece67a;
+  --color-yellow-400: #e6e25a;
+  --color-yellow-500: #cfc83a;
+  --color-orange-400: #ff9a5c;
+  --color-orange-500: #ff8a3a;
+}
+
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
+  /* a fine 40px grid with an amber glow at the top and a periwinkle one at the bottom corner */
+  background-image:
+    linear-gradient(rgba(255, 179, 71, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 179, 71, 0.035) 1px, transparent 1px),
+    radial-gradient(ellipse 70% 40% at 50% -8%, rgba(255, 179, 71, 0.10), transparent 70%),
+    radial-gradient(ellipse 50% 35% at 100% 110%, rgba(139, 156, 255, 0.07), transparent 70%);
+  background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+}
+
+/* headings use the display face; addresses, ports and hex keep the mono face */
+h1, h2 {
+  font-family: var(--font-display), var(--font-geist-sans), system-ui, sans-serif;
+  letter-spacing: -0.015em;
+}
+
+::selection {
+  background: rgba(255, 179, 71, 0.32);
+}
+
+:focus-visible {
+  outline: 2px solid #8b9cff;
+  outline-offset: 2px;
 }
 
 @keyframes fadeInUp {
@@ -30,11 +167,6 @@ body {
 @keyframes fadeInRight {
   from { opacity: 0; transform: translateX(24px); }
   to   { opacity: 1; transform: translateX(0);    }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 transparent; }
-  50%       { box-shadow: 0 0 24px 4px rgba(99,102,241,0.12); }
 }
 
 .animate-fade-in-up    { animation: fadeInUp    0.6s ease-out both; }
@@ -76,23 +208,76 @@ body {
   }
 }
 
-/* ─── Hero background — slow-drifting glow blobs, always on (not hover-gated) ─── */
-
-@keyframes drift-a {
-  0%   { transform: translate(0, 0) scale(1);       opacity: 0.7; }
-  50%  { transform: translate(30px, 20px) scale(1.15); opacity: 1; }
-  100% { transform: translate(0, 0) scale(1);       opacity: 0.7; }
+/* ------------------------------------------------------------------ motion ----- */
+:root {
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);       /* quick start, soft landing */
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);   /* a hint of overshoot for presses */
 }
 
-@keyframes drift-b {
-  0%   { transform: translate(0, 0) scale(1);        opacity: 0.6; }
-  50%  { transform: translate(-24px, 26px) scale(1.1); opacity: 0.95; }
-  100% { transform: translate(0, 0) scale(1);        opacity: 0.6; }
+html {
+  scroll-behavior: smooth;
 }
 
-.hero-blob-a { animation: drift-a 9s ease-in-out infinite; }
-.hero-blob-b { animation: drift-b 11s ease-in-out infinite; }
+/* Everything interactive eases between states instead of snapping. Tailwind's own transition utilities
+   (in a later layer) still win where a component sets its own timing. */
+@layer base {
+  button, a, input, select, textarea, summary {
+    transition-property: color, background-color, border-color, box-shadow, opacity, transform, filter;
+    transition-duration: 180ms;
+    transition-timing-function: var(--ease-out);
+  }
+  button { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+}
+
+/* pressing a button gives a small tactile dip; hovering lifts the primary buttons a touch */
+button:not(:disabled):active {
+  transform: translateY(1px) scale(0.97);
+  transition-duration: 70ms;
+}
+button.bg-indigo-600:not(:disabled):hover,
+button.bg-indigo-500:not(:disabled):hover,
+a.bg-indigo-600:hover,
+a.bg-indigo-500:hover {
+  box-shadow: 0 8px 24px -10px rgba(255, 179, 71, 0.6);
+  transform: translateY(-1px);
+}
+
+input:not([type="range"]):focus,
+select:focus,
+textarea:focus {
+  border-color: #8b9cff;
+  box-shadow: 0 0 0 3px rgba(139, 156, 255, 0.14);
+}
+
+/* every page eases in (see app/template.tsx) */
+@keyframes page-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.page-fade { animation: page-in 320ms var(--ease-out) both; }
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+.animate-rise { animation: rise-in 420ms var(--ease-out) both; }
+.animate-fade { animation: fade-in 400ms var(--ease-out) both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-blob-a, .hero-blob-b { animation: none; }
-}
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  }

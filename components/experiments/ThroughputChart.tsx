@@ -30,15 +30,15 @@ export default function ThroughputChart({ points, maxG, maxS, currentG, currentS
 
   return (
     <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full max-w-xl mx-auto">
-      <line x1={PAD} y1={HEIGHT - PAD} x2={WIDTH - 10} y2={HEIGHT - PAD} stroke="#404040" strokeWidth={1} />
-      <line x1={PAD} y1={PAD - 10} x2={PAD} y2={HEIGHT - PAD} stroke="#404040" strokeWidth={1} />
-      <text x={WIDTH / 2} y={HEIGHT - 6} textAnchor="middle" fontSize={11} fill="#737373" fontFamily="monospace">Offered load (G)</text>
-      <text x={12} y={HEIGHT / 2} textAnchor="middle" fontSize={11} fill="#737373" fontFamily="monospace" transform={`rotate(-90 12 ${HEIGHT / 2})`}>Throughput (S)</text>
+      <line x1={PAD} y1={HEIGHT - PAD} x2={WIDTH - 10} y2={HEIGHT - PAD} stroke="#2a3547" strokeWidth={1} />
+      <line x1={PAD} y1={PAD - 10} x2={PAD} y2={HEIGHT - PAD} stroke="#2a3547" strokeWidth={1} />
+      <text x={WIDTH / 2} y={HEIGHT - 6} textAnchor="middle" fontSize={11} fill="#7d8aa0" fontFamily="monospace">Offered load (G)</text>
+      <text x={12} y={HEIGHT / 2} textAnchor="middle" fontSize={11} fill="#7d8aa0" fontFamily="monospace" transform={`rotate(-90 12 ${HEIGHT / 2})`}>Throughput (S)</text>
 
-      {points.length > 1 && <path d={path} fill="none" stroke="#818cf8" strokeWidth={2} />}
+      {points.length > 1 && <path d={path} fill="none" stroke="#ffc266" strokeWidth={2} />}
 
       {currentG !== undefined && currentS !== undefined && (
-        <circle cx={xScale(currentG)} cy={yScale(currentS)} r={4.5} fill="#c7d2fe" stroke="#818cf8" strokeWidth={1.5} />
+        <circle cx={xScale(currentG)} cy={yScale(currentS)} r={4.5} fill="#ffe3b8" stroke="#ffc266" strokeWidth={1.5} />
       )}
     </svg>
   );

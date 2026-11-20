@@ -25,11 +25,11 @@ interface Props {
 }
 
 const phaseColor: Record<string, string> = {
-  insert: "#22c55e",
-  found: "#f97316",
-  delete: "#ef4444",
-  error: "#ef4444",
-  default: "#6366f1",
+  insert: "#3dcc78",
+  found: "#ff8a3a",
+  delete: "#ff5d73",
+  error: "#ff5d73",
+  default: "#ffb347",
 };
 
 // Tailwind arbitrary-value filter classes per phase — avoids a dynamic inline
@@ -42,11 +42,11 @@ const phaseGlowClass: Record<string, string> = {
   default: "filter-[drop-shadow(0_0_8px_#6366f180)]",
 };
 
-const SELECTED_COLOR = "#fbbf24";
+const SELECTED_COLOR = "#e6e25a";
 
 // Hand-drawn SVG glyphs per device kind — no emoji, no photographic icons.
 function DeviceGlyph({ kind, muted }: { kind: DeviceKind; muted: boolean }) {
-  const stroke = muted ? "#737373" : "#e5e5e5";
+  const stroke = muted ? "#7d8aa0" : "#d0d8e4";
   switch (kind) {
     case "pc":
       return (
@@ -257,7 +257,7 @@ export default function TopologyVisualizer({
             <line
               key={l.id}
               x1={fp.x} y1={fp.y} x2={tp.x} y2={tp.y}
-              stroke={isHl ? highlightColor : isSelected ? SELECTED_COLOR : "#404040"}
+              stroke={isHl ? highlightColor : isSelected ? SELECTED_COLOR : "#2a3547"}
               strokeWidth={isHl || isSelected ? 3 : 2}
               className="transition-all duration-300"
               style={{ cursor: onSelectLink && tool === "select" ? "pointer" : undefined, pointerEvents: "stroke" }}
@@ -274,7 +274,7 @@ export default function TopologyVisualizer({
           <line
             x1={positions[connectingFrom].x} y1={positions[connectingFrom].y}
             x2={connectPoint.x} y2={connectPoint.y}
-            stroke="#818cf8" strokeWidth={2} strokeDasharray="4 4"
+            stroke="#ffc266" strokeWidth={2} strokeDasharray="4 4"
           />
         )}
 
@@ -284,8 +284,8 @@ export default function TopologyVisualizer({
           const isHl = hlDeviceSet.has(d.id);
           const isSelected = selectedDeviceId === d.id;
           const isConnectTarget = connectTarget === d.id;
-          const fill = isHl ? highlightColor : "#171717";
-          const stroke = isHl ? highlightColor : isSelected || isConnectTarget ? SELECTED_COLOR : "#525252";
+          const fill = isHl ? highlightColor : "#0f151e";
+          const stroke = isHl ? highlightColor : isSelected || isConnectTarget ? SELECTED_COLOR : "#44546a";
           const showHandles = tool === "select" && onCreateLink && hoveredId === d.id && !draggingId && !connectingFrom;
           return (
             <g
@@ -325,7 +325,7 @@ export default function TopologyVisualizer({
               ) : (
                 <text
                   x={0} y={36} textAnchor="middle"
-                  fill={isHl ? highlightColor : "#a3a3a3"}
+                  fill={isHl ? highlightColor : "#98a6bb"}
                   fontSize={11} fontFamily="monospace" fontWeight="bold"
                   style={{ cursor: onRenameDevice ? "text" : undefined }}
                   onDoubleClick={(e) => { e.stopPropagation(); startRename(d); }}
@@ -338,7 +338,7 @@ export default function TopologyVisualizer({
                 <circle
                   key={i}
                   cx={dx} cy={dy} r={5}
-                  fill="#1e1b4b" stroke="#818cf8" strokeWidth={1.5}
+                  fill="#211102" stroke="#ffc266" strokeWidth={1.5}
                   className="cursor-crosshair"
                   onPointerDown={(e) => handleHandlePointerDown(e, d.id)}
                 />
@@ -349,7 +349,7 @@ export default function TopologyVisualizer({
 
         {tool !== "select" && ghostPos && !connectingFrom && (
           <g transform={`translate(${ghostPos.x}, ${ghostPos.y})`} opacity={0.45} pointerEvents="none">
-            <rect x={-24} y={-24} width={48} height={48} rx={10} fill="#171717" stroke="#818cf8" strokeWidth={2} strokeDasharray="3 3" />
+            <rect x={-24} y={-24} width={48} height={48} rx={10} fill="#0f151e" stroke="#ffc266" strokeWidth={2} strokeDasharray="3 3" />
             <DeviceGlyph kind={tool} muted={false} />
           </g>
         )}

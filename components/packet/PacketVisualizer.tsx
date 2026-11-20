@@ -11,10 +11,10 @@ interface Props {
 }
 
 const fateColor: Record<PacketState["fate"], string> = {
-  "in-flight": "#6366f1",
-  queued: "#a3a3a3",
-  delivered: "#4ade80",
-  dropped: "#f87171",
+  "in-flight": "#ffb347",
+  queued: "#98a6bb",
+  delivered: "#4fe0cc",
+  dropped: "#ff7d8e",
 };
 
 // Tailwind arbitrary-value filter classes per fate — avoids a dynamic inline
@@ -61,7 +61,7 @@ export default function PacketVisualizer({ topology, packet, width = 640, height
             <line
               key={l.id}
               x1={fp.x} y1={fp.y} x2={tp.x} y2={tp.y}
-              stroke={isActive ? color : "#404040"}
+              stroke={isActive ? color : "#2a3547"}
               strokeWidth={isActive ? 2.5 : 2}
               className="transition-all duration-200"
             />
@@ -76,13 +76,13 @@ export default function PacketVisualizer({ topology, packet, width = 640, height
             <g key={d.id} transform={`translate(${pos.x}, ${pos.y})`}>
               <rect
                 x={-22} y={-22} width={44} height={44} rx={9}
-                fill={isActive ? color : "#171717"}
+                fill={isActive ? color : "#0f151e"}
                 fillOpacity={isActive ? 0.18 : 1}
-                stroke={isActive ? color : "#525252"}
+                stroke={isActive ? color : "#44546a"}
                 strokeWidth={2}
                 className="transition-all duration-300"
               />
-              <text x={0} y={34} textAnchor="middle" fill="#a3a3a3" fontSize={11} fontFamily="monospace" fontWeight="bold">
+              <text x={0} y={34} textAnchor="middle" fill="#98a6bb" fontSize={11} fontFamily="monospace" fontWeight="bold">
                 {d.label}
               </text>
             </g>

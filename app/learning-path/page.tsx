@@ -4,6 +4,7 @@ import Link from "next/link";
 import RouteHelp from "@/components/shared/RouteHelp";
 import Logo from "@/components/shared/Logo";
 import { LEARNING_PATH } from "@/lib/learning-path";
+import SiteFooter from "@/components/shared/SiteFooter";
 
 const HELP_SECTIONS = [
   { heading: "What this page does", body: "The full curriculum in the order it's meant to be learned, grouped by what each stage assumes you already know — not by build phase." },
@@ -15,7 +16,7 @@ const totalTopics = LEARNING_PATH.reduce((sum, g) => sum + g.topics.length, 0);
 
 export default function LearningPathPage() {
   return (
-    <div className="min-h-screen bg-neutral-950 text-white">
+    <div className="min-h-screen flex flex-col text-white">
       <header className="border-b border-neutral-800 px-6 py-4 flex items-center gap-4">
         <Link href="/" className="opacity-80 hover:opacity-100 transition-opacity" aria-label="Network Visualizer home" title="Back to home">
           <Logo showWordmark={false} size={22} />
@@ -74,6 +75,7 @@ export default function LearningPathPage() {
           ))}
         </div>
       </div>
+      <SiteFooter />
     </div>
   );
 }

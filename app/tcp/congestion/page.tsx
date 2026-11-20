@@ -20,10 +20,10 @@ const phaseCaption: Record<string, string> = {
 };
 
 const EVENT_COLOR: Record<CongestionEvent, string> = {
-  "slow-start": "#818cf8",
-  "congestion-avoidance": "#a78bfa",
-  timeout: "#f87171",
-  "fast-retransmit": "#fbbf24",
+  "slow-start": "#ffc266",
+  "congestion-avoidance": "#8b9cff",
+  timeout: "#ff7d8e",
+  "fast-retransmit": "#e6e25a",
 };
 
 const ROUNDS = 20;
@@ -71,11 +71,11 @@ export default function TcpCongestionPage() {
       <div className="flex gap-3">
         <div className="flex-1 bg-neutral-900 border border-neutral-700 rounded-xl p-3">
           <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full h-auto">
-            <line x1={PAD} y1={HEIGHT - PAD} x2={WIDTH - PAD} y2={HEIGHT - PAD} stroke="#404040" strokeWidth={1} />
-            <line x1={PAD} y1={PAD / 2} x2={PAD} y2={HEIGHT - PAD} stroke="#404040" strokeWidth={1} />
-            <line x1={PAD} y1={ssthreshY} x2={WIDTH - PAD} y2={ssthreshY} stroke="#525252" strokeWidth={1.2} strokeDasharray="4 3" />
-            <text x={WIDTH - PAD} y={ssthreshY - 4} textAnchor="end" fontSize={9} fill="#737373" fontFamily="monospace">ssthresh {currentStep?.ssthresh ?? INITIAL_SSTHRESH}</text>
-            {points && <polyline points={points} fill="none" stroke="#6366f1" strokeWidth={1.5} />}
+            <line x1={PAD} y1={HEIGHT - PAD} x2={WIDTH - PAD} y2={HEIGHT - PAD} stroke="#2a3547" strokeWidth={1} />
+            <line x1={PAD} y1={PAD / 2} x2={PAD} y2={HEIGHT - PAD} stroke="#2a3547" strokeWidth={1} />
+            <line x1={PAD} y1={ssthreshY} x2={WIDTH - PAD} y2={ssthreshY} stroke="#44546a" strokeWidth={1.2} strokeDasharray="4 3" />
+            <text x={WIDTH - PAD} y={ssthreshY - 4} textAnchor="end" fontSize={9} fill="#7d8aa0" fontFamily="monospace">ssthresh {currentStep?.ssthresh ?? INITIAL_SSTHRESH}</text>
+            {points && <polyline points={points} fill="none" stroke="#ffb347" strokeWidth={1.5} />}
             {visible.map((s) => (
               <circle key={s.round} cx={xFor(s.round)} cy={yFor(s.cwnd)} r={s.round === currentStep?.round ? 4 : 2.5} fill={EVENT_COLOR[s.event]} />
             ))}

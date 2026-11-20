@@ -21,7 +21,7 @@ const HELP_SECTIONS = [
 ];
 
 type Mode = "queue" | "tcp";
-const COLOR = { reno: "#60a5fa", cubic: "#34d399" };
+const COLOR = { reno: "#7eb3ff", cubic: "#4fe0cc" };
 
 function NumField({ id, label, value, onChange, unit }: { id: string; label: string; value: string; onChange: (v: string) => void; unit?: string }) {
   return (
@@ -138,8 +138,8 @@ export default function LinkModelPage() {
             <Stat label="Goodput" value={`${qResult.summary.goodputMbps.toFixed(1)} Mbit/s`} />
           </div>
           <LineChart xLabel="packet number" yLabel="queueing delay (ms)" height={200}
-            series={[{ name: "queueing delay of delivered packets", color: "#fbbf24", points: qResult.records.filter((r) => r.outcome === "delivered").map((r) => ({ x: r.n, y: r.queueDelayMs })) }]}
-            cursor={qRec && qRec.outcome === "delivered" ? { x: qRec.n, y: qRec.queueDelayMs, color: "#fbbf24" } : undefined} />
+            series={[{ name: "queueing delay of delivered packets", color: "#e6e25a", points: qResult.records.filter((r) => r.outcome === "delivered").map((r) => ({ x: r.n, y: r.queueDelayMs })) }]}
+            cursor={qRec && qRec.outcome === "delivered" ? { x: qRec.n, y: qRec.queueDelayMs, color: "#e6e25a" } : undefined} />
           <p className="text-[11px] text-neutral-500">Dropped packets: {qResult.records.filter((r) => r.outcome === "dropped").map((r) => r.n).join(", ") || "none"}</p>
         </>
       )}
