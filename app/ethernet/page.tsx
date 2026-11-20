@@ -29,12 +29,13 @@ export default function EthernetPage() {
   const [topology] = useState(() => buildDefaultTopology());
   const [fromLabel, setFromLabel] = useState("PC-1");
   const [toLabel, setToLabel] = useState("R-1");
+  const [payload, setPayload] = useState("HTTP GET /");
   const [steps, setSteps] = useState<EthernetStep[]>([]);
 
   const { step, playing, speed, play, pause, stepForward, stepBackward, reset, setSpeed } = usePlayer(steps.length);
   const currentStep = steps[step];
 
-  const handleSend = () => setSteps(sendEthernetFrame(topology, fromLabel.trim().toUpperCase(), toLabel.trim().toUpperCase()));
+  const handleSend = () => setSteps(sendEthernetFrame(topology, fromLabel.trim().toUpperCase(), toLabel.trim().toUpperCase(), payload));
 
   const annotation = currentStep ? ETHERNET_ANNOTATIONS[currentStep.highlightLine] : undefined;
   const captionClass = phaseCaption[currentStep?.phase ?? "default"] ?? phaseCaption.default;
@@ -80,6 +81,12 @@ export default function EthernetPage() {
                 <label htmlFor="eth-to" className="text-xs text-neutral-400 uppercase tracking-wider">To</label>
                 <input id="eth-to" value={toLabel} onChange={(e) => setToLabel(e.target.value)}
                   className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-sm text-white focus:outline-none focus:border-indigo-500" />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label htmlFor="eth-payload" className="text-xs text-neutral-400 uppercase tracking-wider">Payload ({new TextEncoder().encode(payload).length} bytes)</label>
+                <input id="eth-payload" value={payload} onChange={(e) => setPayload(e.target.value)}
+                  className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-sm text-white font-mono focus:outline-none focus:border-indigo-500" />
+                <p className="text-[11px] text-neutral-500">Under 46 bytes gets padded to the 64-byte minimum frame; over 1500 is rejected (MTU).</p>
               </div>
               <button type="button" onClick={handleSend} className="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors">
                 Send Frame

@@ -156,16 +156,41 @@ A few pages are deliberately *not* built the same way, on purpose:
   flow, so it has no `<Controls>` timeline; each action still goes through
   an engine, applied immediately rather than scrubbed.
 
+### Realism
+
+The simulations stay small on purpose, but they follow real behaviour where it matters:
+
+- **TLS 1.3 handshake** — key shares in the Hello messages (ECDHE), then an encrypted
+  certificate, CertificateVerify and Finished; one round trip.
+- **Routing Tables** — longest-prefix match, administrative distance and metric
+  tie-breaks, default gateway, per-hop Ethernet rewrite, TTL, unreachable/black-hole cases.
+- **Link, Queue and Loss lab** — bandwidth, propagation delay and a drop-tail queue;
+  TCP Reno and CUBIC filling the same bottleneck.
+- **TCP** — SYN options (MSS, SACK, window scale, timestamps), SYN retransmission with
+  exponential backoff and the 127-second connect timeout; CUBIC next to Reno.
+- **Ethernet** — 64-byte minimum frame with padding, a real CRC-32, 1500-byte MTU.
+- **HTTP** — keep-alive versus a new connection per request, `Cache-Control` and
+  `ETag` revalidation (`304 Not Modified`).
+- **Routed addressing** — topologies with routers now use one subnet per segment, a
+  router interface (IP and MAC) per subnet, default gateways on hosts and per-router
+  routing tables. The IPv4 and ICMP pages narrate real lookups and traceroute shows the
+  interface each probe arrived on.
+- **Capture Import** — open a real `.pcap`, `.pcapng` or Wireshark JSON export and step
+  through it with explanations of handshakes, retransmissions, DNS and TLS. Everything is
+  decoded in the browser; nothing is uploaded.
+- Every page's **?** panel ends with an **In real networks** note on what production
+  systems do beyond the simulation.
+
 ## Content scope
 
 Organized as: **Foundation** (topology, packets, OSI, encapsulation, devices)
 → **Layer 2** (Ethernet, MAC learning, ARP) → **Layer 3** (IPv4, fragmentation,
-subnetting, routing, NAT, ICMP) → **Layer 4** (ports, UDP, TCP in full) →
+subnetting, routing, routing tables with longest-prefix match, NAT, ICMP) → **Layer 4** (ports, UDP, TCP in full) →
 **Application** (DHCP, DNS, HTTP, HTTPS, load balancing, the Browser Journey
 capstone) → **Network Algorithms** (error detection, ARQ, medium access
 control) → **Enterprise Networking** (VLANs, STP, routing protocols, IPv6,
 wireless, WebSocket, email, SSH, firewalls/ACLs) → **Experiments** (parameter
-labs, an analytical lab, a diagnostic lab).
+labs, an analytical lab, a diagnostic lab, and a link/queue/loss lab).
 
 Deliberately out of scope: BGP/MPLS/VXLAN/SDN/GRE/QoS/data-center fabrics and
 similar carrier- or vendor-specific topics — the project draws its boundary
@@ -180,11 +205,26 @@ cp .env.example .env.local
 # then edit .env.local and paste your key: GROQ_API_KEY=<your_key>
 # get a free key at https://console.groq.com/keys
 npm run dev      # http://localhost:3000
-npm run verify   # runs every engine's logic-only test script
 npm run build    # production build — should emit only static + one dynamic route
 ```
 
 `.env.local` is a plain text file in the project root — Next.js loads it
 automatically and it's already excluded from git via `.env*` in
 `.gitignore`. Without a key, every page still works; only the "Explain in
-detail" panel shows a "Could not reach AI" message instead.
+detail" panel shows a short "not configured" message instead.
+
+### Optional settings
+
+| Variable | Purpose | Default |
+|---|---|---|
+| `GROQ_API_KEY` | Enables the AI explanation panel (server-side only) | unset |
+| `GROQ_MODEL` | Model used for explanations | `openai/gpt-oss-120b` |
+| `EXPLAIN_RATE_PER_MIN` | AI requests allowed per visitor per minute | `12` |
+| `EXPLAIN_GLOBAL_PER_MIN` | AI requests allowed for the whole site per minute | `120` |
+| `TRUSTED_PROXY_HOPS` | Reverse proxies in front of the app (Vercel/nginx = 1) | `0` |
+
+### Notes
+
+- The AI route checks its input, allows same-origin calls only, and is rate limited; the key never reaches the browser.
+- The engine check scripts described above are kept with the author's local files and are not part of this repository.
+

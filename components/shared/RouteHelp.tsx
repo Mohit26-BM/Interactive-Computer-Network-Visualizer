@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import { realWorldNote } from "@/lib/real-world-notes";
 
 interface HelpSection {
   heading: string;
@@ -13,6 +15,7 @@ interface Props {
 }
 
 export default function RouteHelp({ title, sections }: Props) {
+  const realWorld = realWorldNote(usePathname());
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -68,6 +71,12 @@ export default function RouteHelp({ title, sections }: Props) {
                 <p className="text-xs text-neutral-400 leading-relaxed">{s.body}</p>
               </div>
             ))}
+            {realWorld && (
+              <div className="border-t border-neutral-800 pt-3">
+                <div className="text-xs font-semibold text-emerald-300 mb-1">In real networks</div>
+                <p className="text-xs text-neutral-400 leading-relaxed">{realWorld}</p>
+              </div>
+            )}
           </div>
         </div>
       )}

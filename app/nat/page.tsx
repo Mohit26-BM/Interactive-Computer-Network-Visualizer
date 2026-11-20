@@ -10,7 +10,7 @@ import CodePanel from "@/components/shared/CodePanel";
 import { usePlayer } from "@/components/shared/usePlayer";
 import AIExplainer from "@/components/shared/AIExplainer";
 import { buildNatTopology } from "@/lib/topology-engine";
-import { randomEphemeralPort } from "@/lib/ports-engine";
+import { DEFAULT_EPHEMERAL_PORT, randomEphemeralPort } from "@/lib/ports-engine";
 import { sendThroughNat, NatTable, NatStep, NAT_CODE, NAT_ANNOTATIONS, NAT_COMPLEXITY } from "@/lib/nat-engine";
 
 const phaseCaption: Record<string, string> = {
@@ -28,7 +28,7 @@ const HELP_SECTIONS = [
 
 export default function NatPage() {
   const [topology] = useState(() => buildNatTopology());
-  const [clientPort, setClientPort] = useState(() => randomEphemeralPort());
+  const [clientPort, setClientPort] = useState(DEFAULT_EPHEMERAL_PORT);
   const [table, setTable] = useState<NatTable>([]);
   const [steps, setSteps] = useState<NatStep[]>([]);
 

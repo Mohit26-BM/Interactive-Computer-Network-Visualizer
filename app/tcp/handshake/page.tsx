@@ -10,7 +10,7 @@ import CodePanel from "@/components/shared/CodePanel";
 import { usePlayer } from "@/components/shared/usePlayer";
 import AIExplainer from "@/components/shared/AIExplainer";
 import { buildDefaultTopology } from "@/lib/topology-engine";
-import { randomEphemeralPort } from "@/lib/ports-engine";
+import { DEFAULT_EPHEMERAL_PORT } from "@/lib/ports-engine";
 import {
   tcpHandshake, TcpHandshakeStep, TcpConnState,
   TCP_HANDSHAKE_CODE, TCP_HANDSHAKE_ANNOTATIONS, TCP_HANDSHAKE_COMPLEXITY,
@@ -41,14 +41,15 @@ export default function TcpHandshakePage() {
   const [topology] = useState(() => buildDefaultTopology());
   const [clientLabel, setClientLabel] = useState("PC-1");
   const [serverLabel, setServerLabel] = useState("SRV-1");
-  const [clientPort, setClientPort] = useState(() => randomEphemeralPort());
+  const [clientPort, setClientPort] = useState(DEFAULT_EPHEMERAL_PORT);
   const [serverPort, setServerPort] = useState(80);
+  const [synLosses, setSynLosses] = useState(0);
   const [steps, setSteps] = useState<TcpHandshakeStep[]>([]);
 
   const { step, playing, speed, play, pause, stepForward, stepBackward, reset, setSpeed } = usePlayer(steps.length);
   const currentStep = steps[step];
 
-  const handleSend = () => setSteps(tcpHandshake(topology, clientLabel.trim().toUpperCase(), serverLabel.trim().toUpperCase(), clientPort, serverPort));
+  const handleSend = () => setSteps(tcpHandshake(topology, clientLabel.trim().toUpperCase(), serverLabel.trim().toUpperCase(), clientPort, serverPort, { synLosses }));
 
   const annotation = currentStep ? TCP_HANDSHAKE_ANNOTATIONS[currentStep.highlightLine] : undefined;
   const captionClass = phaseCaption[currentStep?.phase ?? "default"] ?? phaseCaption.default;
@@ -116,6 +117,13 @@ export default function TcpHandshakePage() {
                   <input id="tcp-sport" type="number" value={serverPort} onChange={(e) => setServerPort(Number(e.target.value))}
                     className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-sm text-white font-mono focus:outline-none focus:border-indigo-500" />
                 </div>
+              </div>
+              <div className="flex flex-col gap-1">
+                <label htmlFor="tcp-loss" className="text-xs text-neutral-400 uppercase tracking-wider">SYNs lost before one gets through</label>
+                <select id="tcp-loss" value={synLosses} onChange={(e) => setSynLosses(Number(e.target.value))}
+                  className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-sm text-white focus:outline-none focus:border-indigo-500">
+                  {[0, 1, 2, 3, 7].map((n) => <option key={n} value={n}>{n === 0 ? "0 (normal)" : n === 7 ? "7 (all lost - times out)" : `${n} (retransmit ${n}x)`}</option>)}
+                </select>
               </div>
               <button type="button" onClick={handleSend} className="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors">
                 Send SYN

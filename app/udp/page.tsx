@@ -10,7 +10,7 @@ import CodePanel from "@/components/shared/CodePanel";
 import { usePlayer } from "@/components/shared/usePlayer";
 import AIExplainer from "@/components/shared/AIExplainer";
 import { buildDefaultTopology } from "@/lib/topology-engine";
-import { randomEphemeralPort } from "@/lib/ports-engine";
+import { DEFAULT_EPHEMERAL_PORT } from "@/lib/ports-engine";
 import { sendUdpDatagram, UdpStep, UDP_CODE, UDP_ANNOTATIONS, UDP_COMPLEXITY } from "@/lib/udp-engine";
 
 const phaseCaption: Record<string, string> = {
@@ -30,7 +30,7 @@ export default function UdpPage() {
   const [topology] = useState(() => buildDefaultTopology());
   const [fromLabel, setFromLabel] = useState("PC-1");
   const [toLabel, setToLabel] = useState("SRV-1");
-  const [srcPort, setSrcPort] = useState(() => randomEphemeralPort());
+  const [srcPort, setSrcPort] = useState(DEFAULT_EPHEMERAL_PORT);
   const [dstPort, setDstPort] = useState(53);
   const [simulateLoss, setSimulateLoss] = useState(false);
   const [steps, setSteps] = useState<UdpStep[]>([]);

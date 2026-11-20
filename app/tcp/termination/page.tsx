@@ -10,7 +10,7 @@ import CodePanel from "@/components/shared/CodePanel";
 import { usePlayer } from "@/components/shared/usePlayer";
 import AIExplainer from "@/components/shared/AIExplainer";
 import { buildDefaultTopology } from "@/lib/topology-engine";
-import { randomEphemeralPort } from "@/lib/ports-engine";
+import { DEFAULT_EPHEMERAL_PORT } from "@/lib/ports-engine";
 import {
   tcpTerminate, TcpTerminationStep, TerminationState,
   TCP_TERMINATION_CODE, TCP_TERMINATION_ANNOTATIONS, TCP_TERMINATION_COMPLEXITY,
@@ -43,7 +43,7 @@ export default function TcpTerminationPage() {
   const [topology] = useState(() => buildDefaultTopology());
   const [initiatorLabel, setInitiatorLabel] = useState("PC-1");
   const [responderLabel, setResponderLabel] = useState("SRV-1");
-  const [initiatorPort] = useState(() => randomEphemeralPort());
+  const [initiatorPort] = useState(DEFAULT_EPHEMERAL_PORT);
   const [responderPort] = useState(80);
   const [steps, setSteps] = useState<TcpTerminationStep[]>([]);
 

@@ -1,4 +1,6 @@
 import { Step } from "./types";
+import type { DeviceIface } from "./addressing";
+import { assignRoutedAddressing } from "./addressing";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -10,6 +12,8 @@ export interface DeviceNode {
   kind: DeviceKind;
   mac: string;
   ip?: string; // switches don't get one — they operate below IP
+  ifaces?: DeviceIface[]; // routers: one interface (IP + MAC) per attached subnet
+  gateway?: string;       // hosts: the default gateway's IP
 }
 
 export interface NetworkLink {
@@ -38,6 +42,16 @@ const newId = () => `dev-${idCounter++}`;
 let linkIdCounter = 0;
 const newLinkId = () => `link-${linkIdCounter++}`;
 let addressCounter = 0;
+
+// Every topology builder starts numbering from zero. Without this the counters keep climbing
+// across calls, so the server-rendered HTML (built after other pages) and the browser (fresh
+// module) would assign different IPs/MACs to the same device and React would report a
+// hydration mismatch.
+function resetCounters(): void {
+  idCounter = 0;
+  linkIdCounter = 0;
+  addressCounter = 0;
+}
 
 // Deterministic, human-readable MAC/IP assignment — every device gets both
 // the moment it's created, the same way a real NIC has a MAC burned in and
@@ -108,6 +122,7 @@ function st(
 // ─── Default topology — the PC -> Switch -> Router -> Server chain ──────────
 
 export function buildDefaultTopology(): TopologyState {
+  resetCounters();
   const specs: [string, DeviceKind][] = [
     ["PC-1", "pc"],
     ["SW-1", "switch"],
@@ -124,7 +139,7 @@ export function buildDefaultTopology(): TopologyState {
     links.push({ id: newLinkId(), from: devices[i].id, to: devices[i + 1].id });
   }
 
-  return { devices, links, positions: posMap };
+  return assignRoutedAddressing({ devices, links, positions: posMap });
 }
 
 // ─── LAN topology — one switch + three hosts, shared by Ethernet, MAC ───────
@@ -132,6 +147,7 @@ export function buildDefaultTopology(): TopologyState {
 // single local broadcast segment.
 
 export function buildLanTopology(): TopologyState {
+  resetCounters();
   const specs: [string, DeviceKind][] = [
     ["SW-1", "switch"],
     ["PC-1", "pc"],
@@ -157,6 +173,7 @@ export function buildLanTopology(): TopologyState {
 // meaningless since there'd only ever be one path to compare against.
 
 export function buildRoutingTopology(): TopologyState {
+  resetCounters();
   const labels = ["R-A", "R-B", "R-C", "R-D", "R-E"];
   const devices: DeviceNode[] = labels.map((label) => makeDevice(label, "router"));
   const byLabel = (l: string) => devices.find((d) => d.label === l)!;
@@ -184,6 +201,7 @@ export function buildRoutingTopology(): TopologyState {
 // hop, which a single-router chain can't demonstrate.
 
 export function buildIcmpTopology(): TopologyState {
+  resetCounters();
   const specs: [string, DeviceKind][] = [
     ["PC-1", "pc"],
     ["SW-1", "switch"],
@@ -201,7 +219,7 @@ export function buildIcmpTopology(): TopologyState {
     links.push({ id: newLinkId(), from: devices[i].id, to: devices[i + 1].id });
   }
 
-  return { devices, links, positions: posMap };
+  return assignRoutedAddressing({ devices, links, positions: posMap });
 }
 
 // ─── DHCP demo topology — a brand-new PC with no IP yet ─────────────────────
@@ -212,6 +230,7 @@ export function buildIcmpTopology(): TopologyState {
 // scoped to just this topology rather than changing the shared device model.
 
 export function buildDhcpTopology(): TopologyState {
+  resetCounters();
   const serverRaw = makeDevice("DHCP-1", "server");
   const pcRaw = makeDevice("PC-NEW", "pc");
   const pc: DeviceNode = { ...pcRaw, ip: undefined };
@@ -233,6 +252,7 @@ export function buildDhcpTopology(): TopologyState {
 // having two addresses, so it isn't worth a shared-model change.
 
 export function buildNatTopology(): TopologyState {
+  resetCounters();
   const pcRaw = makeDevice("PC-1", "pc");
   const pc: DeviceNode = { ...pcRaw, ip: "192.168.1.10" };
   const routerRaw = makeDevice("R-1", "router");
@@ -260,6 +280,7 @@ export function buildNatTopology(): TopologyState {
 // engine's own labels, not in a new device kind.
 
 export function buildDnsTopology(): TopologyState {
+  resetCounters();
   const specs: [string, string][] = [
     ["PC-1", "client"],
     ["RESOLVER", "resolver"],
@@ -291,6 +312,7 @@ export function buildDnsTopology(): TopologyState {
 // to DeviceNode, the same "don't touch the shared model" call NAT made.
 
 export function buildVlanTopology(): TopologyState {
+  resetCounters();
   const devices = labeledDevices([
     ["R-1", "router"], ["SW-1", "switch"],
     ["PC-1", "pc"], ["PC-2", "pc"], ["PC-3", "pc"], ["PC-4", "pc"],
@@ -363,6 +385,7 @@ export function circlePositions(devices: DeviceNode[], cx: number, cy: number, r
 }
 
 export function buildStarTopology(): TopologyState {
+  resetCounters();
   const devices = labeledDevices([
     ["SW-1", "switch"], ["PC-1", "pc"], ["PC-2", "pc"], ["PC-3", "pc"], ["PC-4", "pc"],
   ]);
@@ -374,6 +397,7 @@ export function buildStarTopology(): TopologyState {
 }
 
 export function buildRingTopology(): TopologyState {
+  resetCounters();
   const devices = labeledDevices([
     ["PC-1", "pc"], ["PC-2", "pc"], ["PC-3", "pc"], ["PC-4", "pc"], ["PC-5", "pc"],
   ]);
@@ -385,6 +409,7 @@ export function buildRingTopology(): TopologyState {
 }
 
 export function buildBusTopology(): TopologyState {
+  resetCounters();
   const devices = labeledDevices([
     ["PC-1", "pc"], ["PC-2", "pc"], ["PC-3", "pc"], ["PC-4", "pc"], ["PC-5", "pc"],
   ]);
@@ -398,6 +423,7 @@ export function buildBusTopology(): TopologyState {
 }
 
 export function buildMeshTopology(): TopologyState {
+  resetCounters();
   const devices = labeledDevices([
     ["R-A", "router"], ["R-B", "router"], ["R-C", "router"], ["R-D", "router"], ["R-E", "router"],
   ]);
@@ -412,6 +438,7 @@ export function buildMeshTopology(): TopologyState {
 }
 
 export function buildSmallOfficeTopology(): TopologyState {
+  resetCounters();
   const devices = labeledDevices([
     ["R-1", "router"], ["SW-1", "switch"], ["PC-1", "pc"], ["PC-2", "pc"], ["PC-3", "pc"], ["SRV-1", "server"],
   ]);
@@ -435,6 +462,7 @@ export function buildSmallOfficeTopology(): TopologyState {
 }
 
 export function buildHomeNetworkTopology(): TopologyState {
+  resetCounters();
   const devices = labeledDevices([
     ["R-1", "router"], ["PC-1", "pc"], ["PC-2", "pc"], ["PC-3", "pc"],
   ]);

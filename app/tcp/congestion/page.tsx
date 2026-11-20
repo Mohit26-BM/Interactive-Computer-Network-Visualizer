@@ -8,7 +8,7 @@ import CodePanel from "@/components/shared/CodePanel";
 import { usePlayer } from "@/components/shared/usePlayer";
 import AIExplainer from "@/components/shared/AIExplainer";
 import {
-  simulateCongestionControl, CongestionRoundStep, CongestionEvent,
+  simulateCongestionControl, CongestionRoundStep, CongestionEvent, CongestionAlgorithm,
   TCP_CONGESTION_CODE, TCP_CONGESTION_ANNOTATIONS, TCP_CONGESTION_COMPLEXITY,
 } from "@/lib/tcp-congestion-engine";
 
@@ -42,12 +42,13 @@ const HEIGHT = 220;
 const PAD = 30;
 
 export default function TcpCongestionPage() {
+  const [algorithm, setAlgorithm] = useState<CongestionAlgorithm>("reno");
   const [steps, setSteps] = useState<CongestionRoundStep[]>([]);
 
   const { step, playing, speed, play, pause, stepForward, stepBackward, reset, setSpeed } = usePlayer(steps.length);
   const currentStep = steps[step];
 
-  const handleStart = () => setSteps(simulateCongestionControl(ROUNDS, INITIAL_SSTHRESH, TIMEOUT_ROUNDS, FAST_RETRANSMIT_ROUNDS));
+  const handleStart = () => setSteps(simulateCongestionControl(ROUNDS, INITIAL_SSTHRESH, TIMEOUT_ROUNDS, FAST_RETRANSMIT_ROUNDS, algorithm));
 
   const annotation = currentStep ? TCP_CONGESTION_ANNOTATIONS[currentStep.highlightLine] : undefined;
   const captionClass = phaseCaption[currentStep?.phase ?? "default"] ?? phaseCaption.default;
@@ -122,6 +123,18 @@ export default function TcpCongestionPage() {
               <p className="text-xs text-neutral-500 leading-relaxed">
                 Fixed scenario: {ROUNDS} rounds, starting ssthresh {INITIAL_SSTHRESH}, a full timeout at round 9, and a fast retransmit (3 duplicate ACKs) at round 16 — chosen to show both recovery paths in one run.
               </p>
+              <div className="flex flex-col gap-1">
+                <span className="text-xs text-neutral-400 uppercase tracking-wider">Algorithm</span>
+                <div className="flex gap-1">
+                  {(["reno", "cubic"] as CongestionAlgorithm[]).map((a) => (
+                    <button key={a} type="button" onClick={() => setAlgorithm(a)} aria-pressed={algorithm === a}
+                      className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${algorithm === a ? "bg-indigo-600/20 border-indigo-500/40 text-indigo-200" : "border-neutral-700 text-neutral-400 hover:text-white"}`}>
+                      {a === "cubic" ? "CUBIC (modern default)" : "Reno (textbook)"}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[11px] text-neutral-500">For loss driven by a real queue, and Reno and CUBIC side by side, see the Link, Queue and Loss lab.</p>
+              </div>
               <button type="button" onClick={handleStart} className="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors">
                 Start Simulation
               </button>

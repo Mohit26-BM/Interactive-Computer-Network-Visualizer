@@ -8,6 +8,18 @@ export function usePlayer(totalSteps: number) {
   const [speed, setSpeed] = useState(1);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // A new simulation (different number of steps) starts again from step 0, paused.
+  // Adjusting state while rendering is React's recommended alternative to an effect here.
+  const [seenTotal, setSeenTotal] = useState(totalSteps);
+  if (seenTotal !== totalSteps) {
+    setSeenTotal(totalSteps);
+    setStep(0);
+    setPlaying(false);
+  }
+
+  // Playback ends by itself on the last step.
+  const isPlaying = playing && step < totalSteps - 1;
+
   const clearTimer = useCallback(() => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
@@ -40,22 +52,18 @@ export function usePlayer(totalSteps: number) {
     setStep(0);
   }, [pause]);
 
+  const seek = useCallback((n: number) => {
+    pause();
+    setStep(Math.max(0, Math.min(Math.floor(n), totalSteps - 1)));
+  }, [pause, totalSteps]);
+
   useEffect(() => {
-    if (!playing) return;
-    if (step >= totalSteps - 1) {
-      setPlaying(false);
-      return;
-    }
+    if (!isPlaying) return;
     timerRef.current = setTimeout(() => {
       setStep((s) => s + 1);
     }, 1000 / speed);
     return clearTimer;
-  }, [playing, step, totalSteps, speed, clearTimer]);
+  }, [isPlaying, step, speed, clearTimer]);
 
-  useEffect(() => {
-    pause();
-    setStep(0);
-  }, [totalSteps]);
-
-  return { step, playing, speed, play, pause, stepForward, stepBackward, reset, setSpeed };
+  return { step, playing: isPlaying, speed, play, pause, stepForward, stepBackward, reset, setSpeed, seek };
 }

@@ -1,6 +1,7 @@
 import { Step, PacketState } from "./types";
 import { TopologyState, DeviceNode, findDevice as findDeviceByLabel } from "./topology-engine";
 import { findPath } from "./packet-engine";
+import { ifaceToward } from "./addressing";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -117,9 +118,12 @@ export function traceroute(topology: TopologyState, fromLabel: string, toLabel: 
     }
 
     if (!isFinal) {
-      hops.push(`${targetDevice.label} (${targetDevice.ip})`);
+      // A router answers from the interface the probe arrived on, so that is the address traceroute shows.
+      const ingress = ifaceToward(targetDevice, pathDevices[targetIdx - 1].id);
+      const shown = ingress?.ip ?? targetDevice.ip;
+      hops.push(`${targetDevice.label} (${shown})`);
       packet = { ...clonePacket(packet), fate: "dropped" };
-      steps.push(st(topology, packet, hops, `TTL hits 0 at ${targetDevice.label} — probe discarded, ${targetDevice.label} sends back "Time Exceeded", revealing itself as hop ${ttlValue}.`, 6, "error"));
+      steps.push(st(topology, packet, hops, `TTL hits 0 at ${targetDevice.label} — probe discarded, ${targetDevice.label} sends back "Time Exceeded" from ${shown}${ingress ? ` (its ${ingress.name} interface, the one the probe arrived on)` : ""}, revealing itself as hop ${ttlValue}.`, 6, "error"));
     } else {
       hops.push(`${targetDevice.label} (${targetDevice.ip})`);
       packet = { ...clonePacket(packet), fate: "delivered" };

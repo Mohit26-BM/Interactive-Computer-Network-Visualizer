@@ -45,6 +45,9 @@ export function lookupPort(port: number): WellKnownPort | undefined {
 // A fresh outgoing connection gets a new, essentially random source port
 // from the dynamic/ephemeral range — this is what lets one client open many
 // simultaneous connections to the very same server port.
+// Starting value shown before the first "new connection" so server and browser render the same page.
+export const DEFAULT_EPHEMERAL_PORT = 52814;
+
 export function randomEphemeralPort(): number {
   return EPHEMERAL_MIN + Math.floor(Math.random() * (EPHEMERAL_MAX - EPHEMERAL_MIN + 1));
 }

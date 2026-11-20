@@ -32,7 +32,7 @@ const STATE_COLOR: Record<TlsState, string> = {
 };
 
 const HELP_SECTIONS = [
-  { heading: "What this page does", body: "The TLS handshake — ClientHello, ServerHello, Certificate, Key Exchange, Finished — followed by an HTTP request riding inside the now-encrypted session." },
+  { heading: "What this page does", body: "The TLS 1.3 handshake — ClientHello and ServerHello (carrying the ECDHE key shares), then the encrypted Certificate, CertificateVerify and Finished messages — followed by an HTTP request riding inside the now-encrypted session." },
   { heading: "How to use it", body: "Click Start Handshake and step through. Once the session is ESTABLISHED, click Send Encrypted HTTP to see the same request from the HTTP page, now opaque on the wire — compare it in the Compare tab." },
   { heading: "Why it matters", body: "HTTPS isn't a different protocol from HTTP — it's HTTP running after TLS has already set up an encrypted channel, not instead of it." },
 ];

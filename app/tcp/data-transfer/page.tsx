@@ -10,7 +10,7 @@ import CodePanel from "@/components/shared/CodePanel";
 import { usePlayer } from "@/components/shared/usePlayer";
 import AIExplainer from "@/components/shared/AIExplainer";
 import { buildDefaultTopology } from "@/lib/topology-engine";
-import { randomEphemeralPort } from "@/lib/ports-engine";
+import { DEFAULT_EPHEMERAL_PORT } from "@/lib/ports-engine";
 import {
   sendTcpData, TcpDataStep,
   TCP_DATA_CODE, TCP_DATA_ANNOTATIONS, TCP_DATA_COMPLEXITY,
@@ -41,7 +41,7 @@ export default function TcpDataTransferPage() {
   const [topology] = useState(() => buildDefaultTopology());
   const [clientLabel, setClientLabel] = useState("PC-1");
   const [serverLabel, setServerLabel] = useState("SRV-1");
-  const [clientPort] = useState(() => randomEphemeralPort());
+  const [clientPort] = useState(DEFAULT_EPHEMERAL_PORT);
   const [serverPort] = useState(80);
   const [loseIndex, setLoseIndex] = useState(-1);
   const [steps, setSteps] = useState<TcpDataStep[]>([]);

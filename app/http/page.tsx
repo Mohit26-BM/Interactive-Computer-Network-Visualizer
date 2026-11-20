@@ -11,7 +11,10 @@ import CodePanel from "@/components/shared/CodePanel";
 import { usePlayer } from "@/components/shared/usePlayer";
 import AIExplainer from "@/components/shared/AIExplainer";
 import { buildDefaultTopology } from "@/lib/topology-engine";
-import { sendHttpRequest, HttpMethod, HttpStep, HTTP_CODE, HTTP_ANNOTATIONS, HTTP_COMPLEXITY } from "@/lib/http-engine";
+import {
+  sendHttpRequest, sendHttpSession, HttpMethod, HttpStep, HTTP_CODE, HTTP_ANNOTATIONS, HTTP_COMPLEXITY,
+  SESSION_SCENARIOS, SessionScenario, SessionSummary, HTTP_SESSION_CODE, HTTP_SESSION_ANNOTATIONS,
+} from "@/lib/http-engine";
 
 const phaseCaption: Record<string, string> = {
   insert: "bg-green-500/15 border-green-500/30 text-green-200",
@@ -36,13 +39,23 @@ export default function HttpPage() {
   const [path, setPath] = useState("/");
   const [body, setBody] = useState("name=visitor");
   const [steps, setSteps] = useState<HttpStep[]>([]);
+  const [session, setSession] = useState<{ kind: SessionScenario; summary: SessionSummary } | null>(null);
 
   const { step, playing, speed, play, pause, stepForward, stepBackward, reset, setSpeed } = usePlayer(steps.length);
   const currentStep = steps[step];
 
-  const handleSend = () => setSteps(sendHttpRequest(topology, clientLabel.trim().toUpperCase(), serverLabel.trim().toUpperCase(), method, path, method === "POST" ? body : undefined));
+  const handleSend = () => {
+    setSession(null);
+    setSteps(sendHttpRequest(topology, clientLabel.trim().toUpperCase(), serverLabel.trim().toUpperCase(), method, path, method === "POST" ? body : undefined));
+  };
+  const runSession = (kind: SessionScenario) => {
+    const sc = SESSION_SCENARIOS[kind];
+    const result = sendHttpSession(topology, clientLabel.trim().toUpperCase(), serverLabel.trim().toUpperCase(), sc.requests, sc.options);
+    setSession({ kind, summary: result.summary });
+    setSteps(result.steps);
+  };
 
-  const annotation = currentStep ? HTTP_ANNOTATIONS[currentStep.highlightLine] : undefined;
+  const annotation = currentStep ? (session ? HTTP_SESSION_ANNOTATIONS : HTTP_ANNOTATIONS)[currentStep.highlightLine] : undefined;
   const captionClass = phaseCaption[currentStep?.phase ?? "default"] ?? phaseCaption.default;
   const displayTopology = currentStep?.topology ?? topology;
   const displayPacket = currentStep?.packet;
@@ -126,6 +139,24 @@ export default function HttpPage() {
               <button type="button" onClick={handleSend} className="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition-colors">
                 Send Request
               </button>
+              <div className="pt-2 space-y-1.5">
+                <div className="text-xs text-neutral-500 uppercase tracking-wider">Real browsing: 3 requests</div>
+                {(Object.keys(SESSION_SCENARIOS) as SessionScenario[]).map((k) => (
+                  <button key={k} type="button" onClick={() => runSession(k)}
+                    className={`w-full text-left px-3 py-2 rounded-lg border text-xs transition-colors ${session?.kind === k ? "bg-indigo-600/15 border-indigo-500/40 text-indigo-200" : "border-neutral-700 text-neutral-300 hover:border-neutral-500"}`}>
+                    <div className="font-medium">{SESSION_SCENARIOS[k].label}</div>
+                    <div className="text-[11px] text-neutral-500 mt-0.5">{SESSION_SCENARIOS[k].description}</div>
+                  </button>
+                ))}
+                {session && (
+                  <div className="grid grid-cols-2 gap-2 pt-1 text-[11px] font-mono">
+                    <div className="bg-neutral-800 rounded-lg p-2"><div className="text-neutral-500 font-sans">Round trips</div><div className="text-indigo-300 font-bold">{session.summary.roundTrips}</div></div>
+                    <div className="bg-neutral-800 rounded-lg p-2"><div className="text-neutral-500 font-sans">TCP connections</div><div className="text-indigo-300 font-bold">{session.summary.connections}</div></div>
+                    <div className="bg-neutral-800 rounded-lg p-2"><div className="text-neutral-500 font-sans">From cache</div><div className="text-indigo-300 font-bold">{session.summary.cacheHits}</div></div>
+                    <div className="bg-neutral-800 rounded-lg p-2"><div className="text-neutral-500 font-sans">Body bytes</div><div className="text-indigo-300 font-bold">{session.summary.bodyBytes}</div></div>
+                  </div>
+                )}
+              </div>
             </div>
           ),
         },
@@ -151,7 +182,7 @@ export default function HttpPage() {
         {
           id: "code",
           label: "Code",
-          content: <CodePanel lines={HTTP_CODE} highlightLine={currentStep?.highlightLine ?? 0} annotation={annotation} />,
+          content: <CodePanel lines={session ? HTTP_SESSION_CODE : HTTP_CODE} highlightLine={currentStep?.highlightLine ?? 0} annotation={annotation} />,
         },
         {
           id: "explain",

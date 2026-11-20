@@ -41,10 +41,9 @@ function st(topology: TopologyState, packet: PacketState, sessionState: TlsState
 }
 
 // ─── The TLS handshake, then one encrypted HTTP request riding inside it ────
-// The public/private keypair (in the certificate) is only ever used to
-// establish trust and exchange a symmetric session key — every byte of the
-// actual HTTP conversation afterward is encrypted with that fast symmetric
-// key, not with the slow asymmetric keypair itself.
+// TLS 1.3: the keys come from an ephemeral (EC)DH exchange carried in the Hello
+// messages; the certificate's key only signs the transcript to prove identity.
+// Every byte after the ServerHello is encrypted.
 
 export function tlsHandshake(topology: TopologyState, clientLabel: string, serverLabel: string): TlsStep[] {
   const steps: TlsStep[] = [];
@@ -82,34 +81,30 @@ export function tlsHandshake(topology: TopologyState, clientLabel: string, serve
     return p;
   }
 
-  // --- 1. ClientHello ---
-  packet = { ...clonePacket(packet), layers: [{ protocol: "TLS", fields: { message: "ClientHello", version: "TLS 1.3", cipherSuites: "TLS_AES_128_GCM_SHA256, TLS_CHACHA20_POLY1305_SHA256", clientRandom: "9f3a...e21c" } }] };
-  steps.push(st(topology, packet, "NONE", `${clientLabel} sends ClientHello: the TLS versions and cipher suites it supports, plus a random value used later to derive keys.`, 1, "insert"));
+  // --- 1. ClientHello (plaintext) ---
+  // TLS 1.3 puts the client's ephemeral (EC)DH public value in the very first message.
+  packet = { ...clonePacket(packet), layers: [{ protocol: "TLS", fields: { message: "ClientHello", supportedVersions: "TLS 1.3", cipherSuites: "TLS_AES_128_GCM_SHA256, TLS_CHACHA20_POLY1305_SHA256", clientRandom: "9f3a...e21c", keyShare: "X25519 public value (client)", serverName: serverLabel + " (SNI, still plaintext)", alpn: "h2, http/1.1" } }] };
+  steps.push(st(topology, packet, "NONE", `${clientLabel} sends ClientHello: supported versions and cipher suites, a random value, and - already - its ephemeral X25519 public value (key_share). Putting the key share in the first message is what lets TLS 1.3 finish in one round trip. This message is plaintext, including the server name (SNI).`, 1, "insert"));
   packet = travel(packet, "ClientHello", "NONE", true);
-  steps.push(st(topology, packet, "NONE", `${serverLabel} receives the ClientHello.`, 2, "found"));
+  steps.push(st(topology, packet, "NONE", `${serverLabel} receives the ClientHello and generates its own ephemeral key pair.`, 2, "found"));
 
-  // --- 2. ServerHello ---
-  packet = { ...clonePacket(packet), layers: [{ protocol: "TLS", fields: { message: "ServerHello", chosenCipher: "TLS_AES_128_GCM_SHA256", serverRandom: "1b7d...a904" } }] };
-  steps.push(st(topology, packet, "HELLO_EXCHANGED", `${serverLabel} picks one cipher suite from the client's list and replies with its own random value.`, 3, "insert"));
+  // --- 2. ServerHello (plaintext) ---
+  packet = { ...clonePacket(packet), layers: [{ protocol: "TLS", fields: { message: "ServerHello", chosenCipher: "TLS_AES_128_GCM_SHA256", serverRandom: "1b7d...a904", keyShare: "X25519 public value (server)" } }] };
+  steps.push(st(topology, packet, "HELLO_EXCHANGED", `${serverLabel} replies with ServerHello: the chosen cipher suite, its random value and its own X25519 public value. This is the last plaintext handshake message.`, 3, "insert"));
   packet = travel(packet, "ServerHello", "HELLO_EXCHANGED", false);
-  steps.push(st(topology, packet, "HELLO_EXCHANGED", `${clientLabel} receives the ServerHello — both sides have now agreed on exactly how this session will be encrypted.`, 4, "found"));
+  steps.push(st(topology, packet, "KEYS_EXCHANGED", `${clientLabel} combines its private value with the server's public value (ECDHE) and runs the result through HKDF. ${serverLabel} did the same. Both hold the same handshake keys and nothing secret ever crossed the wire - everything from here on is encrypted.`, 4, "found"));
 
-  // --- 3. Certificate ---
-  packet = { ...clonePacket(packet), layers: [{ protocol: "TLS", fields: { message: "Certificate", subject: serverLabel, issuer: "Demo CA", publicKey: "(RSA 2048-bit)" } }] };
-  steps.push(st(topology, packet, "HELLO_EXCHANGED", `${serverLabel} sends its certificate — containing its public key, signed by a Certificate Authority the client is supposed to already trust.`, 5, "insert"));
-  packet = travel(packet, "Certificate", "HELLO_EXCHANGED", false);
-  steps.push(st(topology, packet, "CERT_VERIFIED", `${clientLabel} checks the certificate's signature against its trusted CA list. If this didn't check out, the connection would stop here — right now, it's valid.`, 6, "found"));
+  // --- 3. Encrypted server flight ---
+  packet = { ...clonePacket(packet), layers: [{ protocol: "TLS (encrypted)", fields: { message: "EncryptedExtensions + Certificate + CertificateVerify + Finished", encrypted: "yes - handshake keys", certificate: `subject ${serverLabel}, issuer Demo CA, chain to a trusted root`, certificateVerify: "signature over the handshake transcript, made with the server's private key", finished: "MAC over the transcript" } }] };
+  steps.push(st(topology, packet, "KEYS_EXCHANGED", `${serverLabel} sends its whole flight in one go, already encrypted: its certificate chain, a CertificateVerify signature (proof that it holds the certificate's private key - that key is NOT used to encrypt anything) and its Finished MAC. In TLS 1.2 the certificate was visible to eavesdroppers; in 1.3 it is not.`, 5, "insert"));
+  packet = travel(packet, "Server flight (encrypted)", "KEYS_EXCHANGED", false);
+  steps.push(st(topology, packet, "CERT_VERIFIED", `${clientLabel} decrypts the flight and checks: the chain leads to a trusted CA, the certificate is within its validity dates and not revoked, the name matches "${serverLabel}", and the CertificateVerify signature is valid. If any check fails the connection is aborted here.`, 6, "found"));
 
-  // --- 4. Key Exchange ---
-  packet = { ...clonePacket(packet), layers: [{ protocol: "TLS", fields: { message: "KeyExchange", note: "Client and server each independently derive the same symmetric session key from both random values plus the key exchange math." } }] };
-  steps.push(st(topology, packet, "CERT_VERIFIED", `Key exchange happens: the server's public key is used only to protect this one exchange — the actual symmetric session key both sides end up with is never sent over the wire at all.`, 7, "insert"));
-  packet = travel(packet, "KeyExchange", "CERT_VERIFIED", true);
-  packet = travel(packet, "KeyExchange", "KEYS_EXCHANGED", false);
-  steps.push(st(topology, packet, "KEYS_EXCHANGED", `Both ${clientLabel} and ${serverLabel} now hold the same symmetric session key — fast enough to encrypt every byte of real traffic, unlike the public/private keypair used only to get here.`, 8, "found"));
-
-  // --- 5. Finished ---
-  packet = { ...clonePacket(packet), layers: [{ protocol: "TLS", fields: { message: "Finished", note: "encrypted with the new session key — the first thing either side sends that the other couldn't have forged without it" } }] };
-  steps.push(st(topology, packet, "ESTABLISHED", `Both sides send a "Finished" message, encrypted with the session key, proving the handshake wasn't tampered with. The TLS session is now established.`, 9, "found"));
+  // --- 4. Client Finished ---
+  packet = { ...clonePacket(packet), layers: [{ protocol: "TLS (encrypted)", fields: { message: "Finished", encrypted: "yes - handshake keys", finished: "MAC over the whole transcript" } }] };
+  steps.push(st(topology, packet, "CERT_VERIFIED", `${clientLabel} sends its Finished message, a MAC over the entire handshake. Both sides now derive the application traffic keys. The client may start sending encrypted HTTP in the same flight.`, 7, "insert"));
+  packet = travel(packet, "Client Finished (encrypted)", "CERT_VERIFIED", true);
+  steps.push(st(topology, packet, "ESTABLISHED", `${serverLabel} verifies the client's Finished. Total: one round trip (ClientHello out, server flight back) before application data - TLS 1.2 needed two. The session is ESTABLISHED.`, 8, "found"));
 
   return steps;
 }
@@ -151,10 +146,10 @@ export function sendEncryptedHttp(topology: TopologyState, clientLabel: string, 
       { protocol: "HTTP (encrypted)", fields: { method: "••• (hidden)", path: "••• (hidden)", host: "••• (hidden)" } },
     ],
   };
-  steps.push(st(topology, packet, "ESTABLISHED", `${clientLabel} sends a GET request exactly like the plain HTTP page does — but wrapped inside a TLS record. Anyone watching the wire sees encrypted bytes, not the method, path, or host.`, 10, "insert"));
+  steps.push(st(topology, packet, "ESTABLISHED", `${clientLabel} sends a GET request exactly like the plain HTTP page does — but wrapped inside a TLS record. Anyone watching the wire sees encrypted bytes, not the method or path (the server name was visible only in the ClientHello's SNI).`, 9, "insert"));
   packet = travel(packet, true);
   packet = { ...clonePacket(packet), fate: "delivered" };
-  steps.push(st(topology, packet, "ESTABLISHED", `${serverLabel} decrypts the record with the shared session key and reads the exact same HTTP request underneath — HTTP hasn't changed, only what's visible on the wire has.`, 11, "found"));
+  steps.push(st(topology, packet, "ESTABLISHED", `${serverLabel} decrypts the record with the shared session key and reads the exact same HTTP request underneath — HTTP hasn't changed, only what's visible on the wire has.`, 10, "found"));
 
   return steps;
 }
@@ -174,25 +169,25 @@ export function visibilityComparison(): { plaintext: PacketHeaderLayer[]; encryp
 // ─── Pseudocode ───────────────────────────────────────────────────────────────
 
 export const TLS_CODE: string[] = [
-  "send(ClientHello: versions, ciphers, random);       // 1. client -> server",
-  "on receive(ClientHello): prepareResponse();         // 2. server got it",
-  "send(ServerHello: chosenCipher, random);            // 3. server -> client",
-  "on receive(ServerHello): agreedOnCipher = true;     // 4. client got it",
-  "send(Certificate: publicKey, signedBy: CA);         // 5. server -> client",
-  "verify(certificate, trustedCAs);  // stop here if this fails   // 6.",
-  "sessionKey = deriveKey(bothRandoms, certificate.publicKey);    // 7.",
-  "// server independently derives the identical sessionKey       // 8.",
-  "send(Finished, encryptedWith: sessionKey);          // 9. session established",
-  "send(ApplicationData: httpRequest, encryptedWith: sessionKey); // 10.",
-  "// server decrypts with sessionKey, reads the same HTTP request // 11.",
+  "send(ClientHello: versions, ciphers, random, key_share = clientPublic, SNI);   // 1. plaintext",
+  "on receive(ClientHello): (serverPrivate, serverPublic) = newEphemeralKey();    // 2.",
+  "send(ServerHello: chosenCipher, random, key_share = serverPublic);             // 3. last plaintext message",
+  "handshakeKeys = HKDF(ECDH(myPrivate, peerPublic), transcript);   // 4. both sides, nothing secret sent",
+  "send({EncryptedExtensions, Certificate, CertificateVerify, Finished});         // 5. server flight, encrypted",
+  "verify(chain, hostname, validity, CertificateVerify);  // abort if any check fails   // 6.",
+  "send({Finished});  appKeys = HKDF(handshakeSecret, transcript);                 // 7. client Finished",
+  "server verifies client Finished  ->  session ESTABLISHED   (1 round trip total)  // 8.",
+  "send(ApplicationData: httpRequest, encryptedWith: appKeys);                     // 9.",
+  "// server decrypts with appKeys, reads the same HTTP request                    // 10.",
 ];
 
 export const TLS_ANNOTATIONS: Record<number, string> = {
-  1: "The client proposes what it supports; nothing here is a secret yet — this part of the handshake happens in plaintext.",
-  6: "Certificate verification is what stops an attacker from just handing over their own public key and pretending to be the real server.",
-  7: "This is the key idea: the slow asymmetric keypair only ever protects this one moment — the fast symmetric key it produces is what actually encrypts the conversation.",
-  9: "Finished is the first message either side sends that only someone holding the real session key could have produced — proof the handshake wasn't tampered with.",
-  10: "HTTP doesn't run instead of TLS — it runs after TLS, riding inside the encrypted channel this handshake just established.",
+  1: "TLS 1.3 sends the client's key share immediately, guessing which group (X25519) the server will pick. The server name (SNI) is still plaintext unless Encrypted Client Hello is used.",
+  4: "ECDHE: each side combines its own private value with the other's public value and gets the same secret. Because the keys are ephemeral, recording the traffic and stealing the server's key later does not reveal it (forward secrecy).",
+  5: "The certificate's private key signs the transcript (CertificateVerify) to prove identity. It is not used to encrypt or to derive keys - that is the big change from RSA key transport in TLS 1.2.",
+  6: "Real clients also check revocation (OCSP stapling / CRLite), certificate transparency and the hostname. A failed check aborts the handshake.",
+  8: "TLS 1.3 needs one round trip before data. Resumption with a session ticket can even send data in the first flight (0-RTT), at the cost of replay risk.",
+  9: "HTTP doesn't run instead of TLS - it runs after TLS, riding inside the encrypted channel this handshake just established.",
 };
 
 export const TLS_COMPLEXITY = {

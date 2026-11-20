@@ -7,11 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "verify": "tsx scripts/verify-phase2.mjs && tsx scripts/verify-phase3.mjs && tsx scripts/verify-lab.mjs && tsx scripts/verify-phase4.mjs && tsx scripts/verify-phase5.mjs && tsx scripts/verify-extras.mjs && tsx scripts/verify-error-detection.mjs && tsx scripts/verify-reliable-transmission.mjs && tsx scripts/verify-mac-protocols.mjs && tsx scripts/verify-vlan.mjs && tsx scripts/verify-stp.mjs && tsx scripts/verify-routing-protocols.mjs && tsx scripts/verify-wireless.mjs && tsx scripts/verify-websocket.mjs && tsx scripts/verify-email.mjs && tsx scripts/verify-ssh.mjs && tsx scripts/verify-arp-timeout-lab.mjs && tsx scripts/verify-nat-scale-lab.mjs && tsx scripts/verify-routing-whatif-lab.mjs && tsx scripts/verify-aloha-throughput-lab.mjs && tsx scripts/verify-firewall-acl.mjs && tsx scripts/verify-diagnostic-lab.mjs && tsx scripts/verify-packet-life.mjs && tsx scripts/verify-load-balancing.mjs"
+    "verify": "tsx scripts/verify-phase2.mjs && tsx scripts/verify-phase3.mjs && tsx scripts/verify-lab.mjs && tsx scripts/verify-phase4.mjs && tsx scripts/verify-phase5.mjs && tsx scripts/verify-extras.mjs && tsx scripts/verify-error-detection.mjs && tsx scripts/verify-reliable-transmission.mjs && tsx scripts/verify-mac-protocols.mjs && tsx scripts/verify-vlan.mjs && tsx scripts/verify-stp.mjs && tsx scripts/verify-routing-protocols.mjs && tsx scripts/verify-wireless.mjs && tsx scripts/verify-websocket.mjs && tsx scripts/verify-email.mjs && tsx scripts/verify-ssh.mjs && tsx scripts/verify-arp-timeout-lab.mjs && tsx scripts/verify-nat-scale-lab.mjs && tsx scripts/verify-routing-whatif-lab.mjs && tsx scripts/verify-aloha-throughput-lab.mjs && tsx scripts/verify-firewall-acl.mjs && tsx scripts/verify-diagnostic-lab.mjs && tsx scripts/verify-packet-life.mjs && tsx scripts/verify-load-balancing.mjs && tsx scripts/verify-explain-guard.mjs && tsx scripts/verify-routing-table.mjs && tsx scripts/verify-link-model.mjs && tsx scripts/verify-tcp-realism.mjs && tsx scripts/verify-ethernet-frame.mjs && tsx scripts/verify-http-session.mjs && tsx scripts/verify-real-world-notes.mjs && tsx scripts/verify-addressing.mjs && tsx scripts/verify-capture.mjs"
   },
   "dependencies": {
     "groq-sdk": "^1.2.1",
-    "next": "16.2.9",
+    "next": "^16.4.6",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
@@ -21,7 +21,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.9",
+    "eslint-config-next": "^16.4.6",
     "tailwindcss": "^4",
     "tsx": "^4.23.0",
     "typescript": "^5"

@@ -7,7 +7,7 @@ import CodePanel from "@/components/shared/CodePanel";
 import AIExplainer from "@/components/shared/AIExplainer";
 import { buildDefaultTopology } from "@/lib/topology-engine";
 import {
-  WELL_KNOWN_PORTS, WellKnownPort, classifyPort, randomEphemeralPort, socketTuple,
+  WELL_KNOWN_PORTS, WellKnownPort, classifyPort, randomEphemeralPort, DEFAULT_EPHEMERAL_PORT, socketTuple,
   PORTS_CODE, PORTS_ANNOTATIONS, PORTS_COMPLEXITY,
 } from "@/lib/ports-engine";
 
@@ -40,7 +40,7 @@ export default function PortsPage() {
   const server = topology.devices.find((d) => d.label === "SRV-1")!;
 
   const [selectedPort, setSelectedPort] = useState<WellKnownPort>(WELL_KNOWN_PORTS.find((p) => p.port === 80)!);
-  const [clientPort, setClientPort] = useState(() => randomEphemeralPort());
+  const [clientPort, setClientPort] = useState(DEFAULT_EPHEMERAL_PORT);
   const [runCount, setRunCount] = useState(0);
 
   const newConnection = () => { setClientPort(randomEphemeralPort()); setRunCount((c) => c + 1); };

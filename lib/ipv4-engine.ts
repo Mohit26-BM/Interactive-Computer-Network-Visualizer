@@ -1,6 +1,8 @@
 import { Step, PacketState } from "./types";
 import { TopologyState, findDevice as findDeviceByLabel } from "./topology-engine";
 import { findPath } from "./packet-engine";
+import { computeRoutes, ifaceToward, describeLookup } from "./addressing";
+import { lookupRoute } from "./routing-table-engine";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -74,6 +76,7 @@ export function sendIPv4Packet(topology: TopologyState, fromLabel: string, toLab
     return steps;
   }
 
+  const tables = computeRoutes(topology);
   let ttl = START_TTL;
   packet = {
     ...clonePacket(packet),
@@ -82,7 +85,7 @@ export function sendIPv4Packet(topology: TopologyState, fromLabel: string, toLab
       { protocol, fields: { note: `${protocol} payload` } },
     ],
   };
-  steps.push(st(topology, packet, `${fromLabel} builds an IPv4 packet: ${from.ip} → ${to.ip}, TTL=${ttl}. This header will survive the whole trip unchanged except for TTL.`, 1, "insert"));
+  steps.push(st(topology, packet, `${fromLabel} builds an IPv4 packet: ${from.ip} → ${to.ip}, TTL=${ttl}. This header will survive the whole trip unchanged except for TTL.${from.gateway && to.ip && from.ip && !sameSubnet(from.ip, to.ip) ? ` ${to.ip} is not in ${fromLabel}'s own subnet, so the frame will be addressed to its DEFAULT GATEWAY ${from.gateway}, not to ${toLabel}.` : ""}`, 1, "insert"));
 
   // Segments are delimited by non-switch devices (hosts/routers) — a switch
   // never terminates a segment, it just forwards the same frame onward.
@@ -93,8 +96,13 @@ export function sendIPv4Packet(topology: TopologyState, fromLabel: string, toLab
     const segStart = segmentBounds[s];
     const segEnd = segmentBounds[s + 1];
 
-    packet = { ...clonePacket(packet), layers: [{ protocol: "Ethernet", fields: { dstMAC: segEnd.d.mac, srcMAC: segStart.d.mac, etherType: "0x0800" } }, ...packet.layers] };
-    steps.push(st(topology, packet, `${segStart.d.label} builds a fresh Ethernet frame for this segment: ${segStart.d.label} → ${segEnd.d.label}.`, 3, "insert"));
+    // A router has a different MAC on each interface: use the one that faces this segment.
+    const srcIface = segStart.d.kind === "router" ? ifaceToward(segStart.d, path[segStart.i + 1].id) : undefined;
+    const dstIface = segEnd.d.kind === "router" ? ifaceToward(segEnd.d, path[segEnd.i - 1].id) : undefined;
+    const srcMac = srcIface?.mac ?? segStart.d.mac;
+    const dstMac = dstIface?.mac ?? segEnd.d.mac;
+    packet = { ...clonePacket(packet), layers: [{ protocol: "Ethernet", fields: { dstMAC: dstMac, srcMAC: srcMac, etherType: "0x0800" } }, ...packet.layers] };
+    steps.push(st(topology, packet, `${segStart.d.label} builds a fresh Ethernet frame for this segment: ${srcMac} → ${dstMac} (${segStart.d.label} → ${segEnd.d.label}${dstIface ? `, the ${segEnd.d.label} interface ${dstIface.name} with IP ${dstIface.ip}` : ""}).`, 3, "insert"));
 
     for (let i = segStart.i; i < segEnd.i; i++) {
       const hopFrom = path[i];
@@ -123,7 +131,16 @@ export function sendIPv4Packet(topology: TopologyState, fromLabel: string, toLab
         steps.push(st(topology, packet, `${segEnd.d.label} decrements TTL to 0 — packet discarded, an ICMP Time Exceeded would be sent back (see ICMP).`, 6, "error"));
         return steps;
       }
-      steps.push(st(topology, packet, `${segEnd.d.label} strips the Ethernet frame, decrements TTL to ${ttl}, and forwards toward ${toLabel}.`, 6, "insert"));
+      const table = tables[segEnd.d.id];
+      const lookup = table && to.ip ? describeLookup(table, to.ip) : null;
+      const nextSeg = segmentBounds[s + 2];
+      const egress = nextSeg ? ifaceToward(segEnd.d, path[segEnd.i + 1].id) : undefined;
+      if (table && to.ip && !lookupRoute(table, to.ip).best) {
+        packet = { ...clonePacket(packet), fate: "dropped" };
+        steps.push(st(topology, packet, `${segEnd.d.label} looks up ${to.ip}: ${lookup}. The packet is dropped and ICMP Destination Unreachable goes back to the sender.`, 6, "error"));
+        return steps;
+      }
+      steps.push(st(topology, packet, `${segEnd.d.label} strips the Ethernet frame and looks up ${to.ip ?? toLabel} in its routing table: ${lookup ?? "forward toward the destination"}. It decrements TTL to ${ttl} and forwards${egress ? ` out ${egress.name} (${egress.ip})` : ""} toward ${toLabel}, building a new Ethernet header for the next link.`, 6, "insert"));
     } else {
       packet = { ...clonePacket(packet), layers: packet.layers.slice(2), fate: "delivered" };
       steps.push(st(topology, packet, `${toLabel} strips the final Ethernet frame and the IPv4 header, and hands the payload to the ${protocol} layer above.`, 8, "found"));
@@ -131,6 +148,11 @@ export function sendIPv4Packet(topology: TopologyState, fromLabel: string, toLab
   }
 
   return steps;
+}
+
+function sameSubnet(a: string, b: string): boolean {
+  const toInt = (ip: string) => ip.split(".").reduce((n, o) => ((n << 8) | Number(o)) >>> 0, 0);
+  return (toInt(a) & 0xffffff00) === (toInt(b) & 0xffffff00);
 }
 
 // ─── Pseudocode ───────────────────────────────────────────────────────────────

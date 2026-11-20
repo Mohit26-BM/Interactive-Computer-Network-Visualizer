@@ -24,3 +24,21 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Kept on this machine only - not published to GitHub
+_local/
+CLAUDE.md
+AGENTS.md
+PROJECT_CONTEXT.md
+How to run.md
+.claude/
+.agents/
+.windsurf/
+.cursor/
+.vscode/
+.idea/
+skills-lock.json
+# engine check scripts (run locally with `npm run verify`)
+scripts/
+desktop.ini
+*.log

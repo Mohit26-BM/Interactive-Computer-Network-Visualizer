@@ -45,6 +45,7 @@ export const LEARNING_PATH: LearningPathGroup[] = [
       { label: "IPv4 Fragmentation", href: "/ipv4/fragmentation", built: true },
       { label: "Subnetting", href: "/subnetting", built: true },
       { label: "Routing", href: "/routing", built: true },
+      { label: "Routing Tables", href: "/routing-table", built: true },
       { label: "NAT", href: "/nat", built: true },
       { label: "ICMP", href: "/icmp", built: true },
     ],

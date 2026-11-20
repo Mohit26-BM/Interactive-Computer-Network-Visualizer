@@ -48,6 +48,7 @@ const NAV_GROUPS: NavGroup[] = [
       { href: "/ipv4/fragmentation", label: "IPv4 Fragmentation" },
       { href: "/subnetting", label: "Subnetting" },
       { href: "/routing", label: "Routing" },
+      { href: "/routing-table", label: "Routing Tables" },
       { href: "/nat", label: "NAT" },
       { href: "/icmp", label: "ICMP" },
     ],
@@ -107,6 +108,8 @@ const NAV_GROUPS: NavGroup[] = [
       { href: "/experiments/routing-whatif", label: "Routing What-If" },
       { href: "/experiments/aloha-throughput", label: "ALOHA Throughput" },
       { href: "/experiments/diagnostic", label: "Diagnostic Lab" },
+      { href: "/experiments/link-model", label: "Link, Queue and Loss" },
+      { href: "/capture", label: "Capture Import" },
     ],
   },
 ];
